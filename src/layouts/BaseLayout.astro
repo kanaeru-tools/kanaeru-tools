@@ -1,0 +1,16 @@
+---
+const { title = "Kanaeru Tools" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+
+  <body style="max-width: 800px; margin: 40px auto; font-family: sans-serif;">
+    <slot />
+  </body>
+</html>
