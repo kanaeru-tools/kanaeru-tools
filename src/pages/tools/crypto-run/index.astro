@@ -1,0 +1,110 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="仮想通貨CSV圧縮ツール | Cryptact対応">
+
+<section style="max-width: 800px; margin: 0 auto;">
+
+  <!-- Hero -->
+  <h1>仮想通貨CSV 圧縮ツール（Cryptact対応）</h1>
+
+  <p style="font-size: 1.1rem;">
+    取引所の取引履歴CSVをアップロードするだけ。<br />
+    RUN単位に圧縮して、Cryptact提出用CSVを自動生成します。
+  </p>
+
+  <a
+    href="#start"
+    style="display:inline-block; margin:20px 0; padding:12px 20px; background:#2563eb; color:white; border-radius:8px; text-decoration:none;"
+  >
+    無料で使ってみる ▶
+  </a>
+
+  <hr />
+
+  <!-- What -->
+  <h2>このツールでできること</h2>
+  <ul>
+    <li>取引履歴CSVを自動読み込み</li>
+    <li>同一RUNの取引をまとめて圧縮</li>
+    <li>Cryptact対応フォーマットで出力</li>
+    <li>複数CSV同時アップロード対応</li>
+  </ul>
+
+  <p>
+    現在対応：Bitbank / Coincheck / Bitflyer
+  </p>
+
+  <hr />
+
+  <!-- How -->
+  <h2>使い方（3ステップ）</h2>
+  <ol>
+    <li>取引所のCSVを選択（複数可）</li>
+    <li>「圧縮実行」をクリック</li>
+    <li>結果CSVをダウンロード</li>
+  </ol>
+
+  <hr />
+
+  <!-- Safety -->
+  <h2>安心して使っていただくために</h2>
+  <ul>
+    <li>アップロードされたCSVは保存されません</li>
+    <li>無料でご利用いただけます</li>
+    <li>本ツールは変換対応の取引所やCryptact社とは関係のない非公式ツールです。</li>
+  </ul>
+
+  <p>
+    ※ 本ツールは税務申告の正確性を保証するものではありません。<br />
+    最終的な申告責任は利用者ご本人にあります。
+  </p>
+
+  <p>
+    詳細な利用規約は
+    <a href="/terms" target="_blank">こちら</a>
+    をご確認ください。
+  </p>
+
+  <hr />
+
+  <!-- CTA -->
+  <h2 id="start">ツールを起動</h2>
+
+  <label>
+    <input type="checkbox" id="agree" />
+    利用規約に同意してツールを利用します
+  </label>
+
+  <br /><br />
+
+  <a
+    id="launchBtn"
+    href="https://crypto-standard.shinyapps.io/crypto_trade_standardizer/"
+    style="display:inline-block; padding:14px 24px; background:#f59e0b; color:white; border-radius:10px; text-decoration:none; pointer-events:none; opacity:0.5;"
+    aria-disabled="true"
+  >
+    ▶ ツールを起動する
+  </a>
+
+</section>
+
+<script>
+  const checkbox = document.getElementById("agree");
+  const btn = document.getElementById("launchBtn");
+
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) {
+      btn.style.pointerEvents = "auto";
+      btn.style.opacity = "1";
+      btn.setAttribute("aria-disabled", "false");
+    } else {
+      btn.style.pointerEvents = "none";
+      btn.style.opacity = "0.5";
+      btn.setAttribute("aria-disabled", "true");
+    }
+  });
+</script>
+
+</BaseLayout>

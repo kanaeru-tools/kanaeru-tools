@@ -1,0 +1,42 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="暗号資産CSV圧縮ツール">
+  <h1>暗号資産CSV圧縮ツール</h1>
+
+  <p>
+    取引所の取引履歴CSVをアップロードすると、  
+    クリプタクトに取り込める形式へ圧縮・変換します。
+  </p>
+
+  <ul>
+    <li>bitFlyer / bitbank / Coincheck 対応</li>
+    <li>複数CSV同時アップロード対応</li>
+    <li>RUN圧縮で課金ランクを抑制</li>
+  </ul>
+
+  <p>
+    <a
+      href="https://crypto-standard.shinyapps.io/crypto_trade_standardizer/"
+      target="_blank"
+      class="launch-btn"
+    >
+      👉 ツールを起動する
+    </a>
+  </p>
+</BaseLayout>
+
+<style>
+.launch-btn {
+  display: inline-block;
+  background: #2563eb;
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.launch-btn:hover {
+  background: #1d4ed8;
+}
+</style>
