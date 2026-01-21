@@ -1,5 +1,5 @@
 ---
-const { title = "Kanaeru Tools" } = Astro.props;
+const { title = "Kanaeru Tools", description = "" } = Astro.props;
 ---
 
 <!doctype html>
@@ -8,6 +8,26 @@ const { title = "Kanaeru Tools" } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+
+    <meta property="og:title" content={title} />
+    <meta property="og:site_name" content="かなえるTools" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kanaeru-tools.com/" />
+
+    {description && <meta name="description" content={description} />}
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "かなえるTools",
+      "alternateName": "Kanaeru Tools",
+      "url": "https://kanaeru-tools.com/"
+    }
+    </script>
+
+    <link rel="icon" href="/favicon.ico" />
+    
   </head>
 
   <body style="max-width: 800px; margin: 40px auto; font-family: sans-serif;">
