@@ -1,94 +1,157 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 const title = "仮想通貨CSV圧縮ツール｜かなえるTools";
-const description = "取引所の暗号資産取引履歴CSVをワンクリックで圧縮・変換し、Cryptactなどの損益計算サービスに取り込みやすい形式へ整形する無料ツールです。";
+const description =
+  "取引所の暗号資産取引履歴CSVをワンクリックで圧縮・変換し、Cryptactなどの損益計算サービスに取り込みやすい形式へ整形する無料ツールです。";
 ---
 
-<BaseLayout title="仮想通貨CSV圧縮ツール｜かなえるTools">
+<BaseLayout title={title} description={description}>
 
-<section style="max-width: 800px; margin: 0 auto;">
+<style>
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero {
+    background: #f1f5f9;
+    padding: 40px 28px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    margin-bottom: 12px;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+
+  .card {
+    background: #ffffff;
+    padding: 24px 28px;
+    margin: 24px 0;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .cta-primary {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 14px 26px;
+    background: #2563eb;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .cta-primary:hover {
+    background: #1d4ed8;
+  }
+
+  .cta-launch {
+    display: inline-block;
+    padding: 14px 26px;
+    background: #f59e0b;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .note {
+    font-size: 0.9rem;
+    color: #555;
+  }
+</style>
+
+<section class="container">
 
   <!-- Hero -->
-  <h1>仮想通貨CSV 圧縮ツール（Cryptact対応）</h1>
+  <div class="hero">
+    <h1>仮想通貨CSV 圧縮ツール（Cryptact対応）</h1>
 
-  <p style="font-size: 1.1rem;">
-    取引所の取引履歴CSVをアップロードするだけ。<br />
-    データを適切に圧縮して、CryptactにそのままUPできるCSVを生成します。
-  </p>
+    <p>
+      取引所の取引履歴CSVをアップロードするだけ。<br />
+      データを適切に圧縮して、CryptactにそのままUPできるCSVを生成します。
+    </p>
 
-  <a
-    href="#start"
-    style="display:inline-block; margin:20px 0; padding:12px 20px; background:#2563eb; color:white; border-radius:8px; text-decoration:none;"
-  >
-    無料で使ってみる ▶
-  </a>
-
-  <hr />
+    <a href="#start" class="cta-primary">
+      無料で使ってみる ▶
+    </a>
+  </div>
 
   <!-- What -->
-  <h2>このツールでできること</h2>
-  <ul>
-    <li>取引履歴CSVを自動読み込み</li>
-    <li>同一とみなせる取引をまとめて圧縮（RUN圧縮という仕組みを使っています）</li>
-    <li>Cryptact対応フォーマットで出力</li>
-    <li>複数CSV同時アップロード可能です</li>
-  </ul>
+  <div class="card">
+    <h2>このツールでできること</h2>
+    <ul>
+      <li>取引履歴CSVを自動読み込み</li>
+      <li>同一とみなせる取引をまとめて圧縮（RUN圧縮という仕組みを使っています）</li>
+      <li>Cryptact対応フォーマットで出力</li>
+      <li>複数CSV同時アップロード可能です</li>
+    </ul>
 
-  <p>
-    現在対応：Bitbank / Coincheck / Bitflyer
-  </p>
-
-  <hr />
+    <p>
+      現在対応：Bitbank / Coincheck / Bitflyer
+    </p>
+  </div>
 
   <!-- How -->
-  <h2>使い方（3ステップ）</h2>
-  <ol>
-    <li>取引所のCSVを選択（複数可）</li>
-    <li>「圧縮実行」をクリック</li>
-    <li>結果CSVをダウンロード</li>
-  </ol>
-
-  <hr />
+  <div class="card">
+    <h2>使い方（3ステップ）</h2>
+    <ol>
+      <li>取引所のCSVを選択（複数可）</li>
+      <li>「圧縮実行」をクリック</li>
+      <li>結果CSVをダウンロード</li>
+    </ol>
+  </div>
 
   <!-- Safety -->
-  <h2>安心して使っていただくために</h2>
-  <ul>
-    <li>アップロードされたCSVは保存されません</li>
-    <li>無料でご利用いただけます</li>
-    <li>本ツールは変換対応の取引所やCryptact社とは関係のない非公式ツールです。</li>
-  </ul>
+  <div class="card">
+    <h2>安心して使っていただくために</h2>
+    <ul>
+      <li>アップロードされたCSVは保存されません</li>
+      <li>無料でご利用いただけます</li>
+      <li>本ツールは変換対応の取引所やCryptact社とは関係のない非公式ツールです。</li>
+    </ul>
 
-  <p>
-    ※ 本ツールは税務申告の正確性を保証するものではありません。<br />
-    最終的な申告責任は利用者ご本人にあります。
-  </p>
+    <p class="note">
+      ※ 本ツールは税務申告の正確性を保証するものではありません。<br />
+      最終的な申告責任は利用者ご本人にあります。
+    </p>
 
-  <p>
-    詳細な利用規約は
-    <a href="/terms" target="_blank">こちら</a>
-    をご確認ください。
-  </p>
-
-  <hr />
+    <p class="note">
+      詳細な利用規約は
+      <a href="/terms" target="_blank">こちら</a>
+      をご確認ください。
+    </p>
+  </div>
 
   <!-- CTA -->
-  <h2 id="start">ツールを起動</h2>
+  <div class="card" id="start">
+    <h2>ツールを起動</h2>
 
-  <label>
-    <input type="checkbox" id="agree" />
-    利用規約に同意してツールを利用します
-  </label>
+    <label>
+      <input type="checkbox" id="agree" />
+      利用規約に同意してツールを利用します
+    </label>
 
-  <br /><br />
+    <br /><br />
 
-  <a
-    id="launchBtn"
-    href="https://crypto-standard.shinyapps.io/crypto_trade_standardizer/"
-    style="display:inline-block; padding:14px 24px; background:#f59e0b; color:white; border-radius:10px; text-decoration:none; pointer-events:none; opacity:0.5;"
-    aria-disabled="true"
-  >
-    ▶ ツールを起動する
-  </a>
+    <a
+      id="launchBtn"
+      href="https://crypto-standard.shinyapps.io/crypto_trade_standardizer/"
+      class="cta-launch"
+      aria-disabled="true"
+    >
+      ▶ ツールを起動する
+    </a>
+  </div>
 
 </section>
 
