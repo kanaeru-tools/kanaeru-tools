@@ -44,7 +44,6 @@ const { title = "かなえるTools", description = "" } = Astro.props;
 
         <nav class="site-nav">
           <a href="/tools/crypto-run/">仮想通貨CSV圧縮</a>
-          <a href="/blog/cryptact-csv-upload/">使い方</a>
           <a href="/terms/">利用規約</a>
         </nav>
       </div>
@@ -69,6 +68,10 @@ const { title = "かなえるTools", description = "" } = Astro.props;
 
     <style>
       .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+
         border-bottom: 2px solid #ddd;
         background: #fff;
       }
