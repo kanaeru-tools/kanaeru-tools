@@ -13,57 +13,113 @@ const { title = "かなえるTools", description = "" } = Astro.props;
     <meta property="og:site_name" content="かなえるTools" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://kanaeru-tools.com/" />
-    <meta property="og:image" content="https://kanaeru-tools.com/ogp/crypto-run_image_free_light.jpg" />
+    <meta
+      property="og:image"
+      content="https://kanaeru-tools.com/ogp/crypto-run_image_free_light.jpg"
+    />
 
     {description && <meta name="description" content={description} />}
 
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "かなえるTools",
-      "alternateName": "Kanaeru Tools",
-      "url": "https://kanaeru-tools.com/"
-    }
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "かなえるTools",
+        "alternateName": "Kanaeru Tools",
+        "url": "https://kanaeru-tools.com/"
+      }
     </script>
 
     <link rel="icon" href="/favicon.ico" />
-    
   </head>
 
   <body>
 
-    <main>
+    <!-- ヘッダー -->
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="/" class="site-logo">
+          かなえるTools
+        </a>
+
+        <nav class="site-nav">
+          <a href="/tools/crypto-run/">仮想通貨CSV圧縮</a>
+          <a href="/blog/cryptact-csv-upload/">使い方</a>
+          <a href="/terms/">利用規約</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="site-main">
       <slot />
     </main>
 
+    <!-- フッター -->
     <footer class="site-footer">
       <p>
         ツールの改善要望・対応してほしい取引所などがあればお気軽にご連絡ください。
       </p>
       <p>
         お問い合わせ：
-        <a href="mailto:info@kanaeru-tools.com">
+        <a href="mailto:kanaeru.tools@gmail.com">
           kanaeru.tools@gmail.com
         </a>
       </p>
     </footer>
 
+    <style>
+      .site-header {
+        border-bottom: 2px solid #ddd;
+        background: #fff;
+      }
+
+      .header-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0.8rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .site-logo {
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-decoration: none;
+        color: #222;
+      }
+
+      .site-nav a {
+        margin-left: 1rem;
+        text-decoration: none;
+        font-size: 0.9rem;
+        color: #444;
+      }
+
+      .site-nav a:hover {
+        text-decoration: underline;
+      }
+
+      .site-main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 1.5rem 1rem;
+      }
+
+      .site-footer {
+        margin-top: 4rem;
+        padding: 2rem 1rem;
+        border-top: 2px solid #ddd;
+        font-size: 0.9rem;
+        color: #555;
+        text-align: center;
+        background: #fafafa;
+      }
+
+      .site-footer a {
+        color: inherit;
+      }
+    </style>
+
   </body>
-
 </html>
-
-<style>
-.site-footer {
-  margin-top: 4rem;
-  padding: 2.5rem 1rem;
-
-  border-top: 2px solid #ddd;
-
-  background: #fafafa;
-
-  font-size: 0.9rem;
-  color: #555;
-  text-align: center;
-}
-</style>
