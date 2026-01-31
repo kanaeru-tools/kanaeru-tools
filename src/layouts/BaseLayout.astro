@@ -35,8 +35,6 @@ const { title = "かなえるTools", description = "" } = Astro.props;
 
   <body>
 
-    scrollbar-gutter: stable;
-    
     <!-- ヘッダー -->
     <header class="site-header">
       <div class="header-inner">
@@ -69,6 +67,11 @@ const { title = "かなえるTools", description = "" } = Astro.props;
     </footer>
 
     <style>
+
+      body {
+        scrollbar-gutter: stable;
+      }
+      
       .site-header {
         position: sticky;
         top: 0;
