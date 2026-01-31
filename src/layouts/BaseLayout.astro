@@ -31,7 +31,33 @@ const { title = "かなえるTools", description = "" } = Astro.props;
     
   </head>
 
-  <body style="max-width: 800px; margin: 40px auto; font-family: sans-serif;">
-    <slot />
+  <body>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        ツールの改善要望・対応してほしい取引所などがあればお気軽にご連絡ください。
+      </p>
+      <p>
+        お問い合わせ：
+        <a href="mailto:info@kanaeru-tools.com">
+          info@kanaeru-tools.com
+        </a>
+      </p>
+    </footer>
+
   </body>
+
 </html>
+
+.site-footer {
+  margin-top: 4rem;
+  padding: 2rem 1rem;
+  border-top: 1px solid #eee;
+  font-size: 0.9rem;
+  color: #555;
+  text-align: center;
+}
