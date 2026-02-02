@@ -40,6 +40,7 @@ const { title = "かなえるTools", description = "" } = Astro.props;
       <div class="header-inner">
         <a href="/" class="site-logo">
           かなえるTools
+          <span class="site-tagline">小さな業務を、ちゃんとかなえる</span>
         </a>
 
         <nav class="site-nav">
@@ -95,6 +96,15 @@ const { title = "かなえるTools", description = "" } = Astro.props;
         font-weight: 700;
         text-decoration: none;
         color: #222;
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+      }
+
+      .site-tagline {
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: #666;
       }
 
       .site-nav a {
