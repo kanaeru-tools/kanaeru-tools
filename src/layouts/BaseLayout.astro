@@ -52,7 +52,9 @@ const { title = "かなえるTools", description = "" } = Astro.props;
     </header>
 
     <main class="site-main">
-      <slot />
+      <div class="main-inner">
+        <slot />
+      </div>
     </main>
 
     <!-- フッター -->
@@ -72,7 +74,7 @@ const { title = "かなえるTools", description = "" } = Astro.props;
 
       /* ページ全体の地色（オーバースクロール対策） */
       html, body {
-        background: #f3f4f6; /* かなり薄いグレー */
+        background: #f5f6f8; /* 薄いグレーに統一 */
       }
 
       /* ヘッダー */
@@ -87,22 +89,29 @@ const { title = "かなえるTools", description = "" } = Astro.props;
 
       /* メイン（白い紙） */
       .site-main {
-        background: #ffffff;
+        background: #ffffff;   /* 白ベタ */
+        width: 100%;           /* 画面いっぱい */
+        padding: 2.5rem 0;     /* 上下だけ余白 */
+      }
+
+      /* mainの中身用に「コンテンツ幅」を作る */
+      .main-inner {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 1.5rem 1rem;
+        padding: 0 1rem;
       }
+
 
       /* フッター */
       .site-footer {
-        margin-top: 4rem;
+        background: #f5f6f8;
+        border-top: 1px solid #e0e0e0;
         padding: 2rem 1rem;
-        background: #fafafa; /* ヘッダーと同色 */
-        border-top: 1px solid #e5e7eb;
+        text-align: center;
         font-size: 0.9rem;
         color: #555;
-        text-align: center;
       }
+
 
 
       .header-inner {
