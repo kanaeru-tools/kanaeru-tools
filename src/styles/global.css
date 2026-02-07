@@ -228,3 +228,38 @@ hr {
 	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }
+
+/* ===== 記事ページ用タイポグラフィ調整 ===== */
+
+h1 {
+  font-size: 2rem;
+  line-height: 1.35;
+  margin: 2.2rem 0 1rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin: 2rem 0 0.8rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+h3 {
+  font-size: 1.25rem;
+  margin: 1.6rem 0 0.5rem;
+}
+
+p {
+  font-size: 0.98rem;
+  line-height: 1.9;
+  color: #333;
+}
+
+ul, ol {
+  padding-left: 1.2rem;
+}
+
+li {
+  margin: 0.3rem 0;
+}
