@@ -1,0 +1,136 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const title = "Cryptactで『取引件数が多すぎます』と表示されたときの対処法｜仮想通貨の損益計算";
+const description =
+  "Cryptact（クリプタクト）で『取引件数が多すぎます』と表示されて損益計算が進まない場合の原因と対処法を解説します。CSV件数問題の仕組みと具体的な解決手順を初心者向けにまとめました。";
+---
+
+<BaseLayout title={title} description={description}>
+
+<section class="section">
+
+  <h1 class="section-title">
+    Cryptactで「取引件数が多すぎます」と表示されたときの対処法
+  </h1>
+
+  <div class="card">
+    <p>
+      仮想通貨の損益計算をしようとしてCryptactにCSVを取り込んだとき、
+      「取引件数が多すぎます」「上位プランが必要です」と表示されて進めなくなることがあります。
+    </p>
+
+    <p>
+      特に、トレードを頻繁にしているつもりがなくても、
+      積立や少額売買を続けているだけでこの状態になるケースは珍しくありません。
+    </p>
+
+    <p>
+      この記事では、この表示が出る原因と、実際に損益計算を進めるための対処法を解説します。
+    </p>
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <h2 class="section-title">なぜ「取引件数が多すぎます」と表示されるのか</h2>
+
+  <div class="card">
+    <p>
+      仮想通貨の損益計算サービスは、アップロードされたCSVの「行数（＝取引数）」をもとに
+      プラン判定が行われます。
+    </p>
+
+    <p>
+      ここで重要なのは、実際の投資量とは関係ないという点です。
+    </p>
+
+    <ul>
+      <li>毎日少額で積立している</li>
+      <li>自動積立を長期間続けている</li>
+      <li>端数調整の売買が多い</li>
+    </ul>
+
+    <p>
+      このような場合、取引金額は小さくてもCSVの件数だけが膨大になり、
+      損益計算サービス側では「大量トレードユーザー」と判定されてしまいます。
+    </p>
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <h2 class="section-title">実はエラーではなく「データ量の問題」です</h2>
+
+  <div class="card">
+    <p>
+      この表示は、データが壊れているわけでも、
+      CSVの形式が間違っているわけでもありません。
+    </p>
+
+    <p>
+      単純に「処理対象の取引件数が多すぎる」ことが原因です。
+    </p>
+
+    <p>
+      つまり、
+      <strong>損益計算に必要な情報が多いのではなく、記録の粒度が細かすぎる</strong>
+      という状態です。
+    </p>
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <h2 class="section-title">対処法：損益を変えずに取引件数を減らす</h2>
+
+  <div class="card">
+    <p>
+      損益計算では、同じ価格・同じ条件で連続している取引は、
+      まとめて扱っても税務上の意味は変わりません。
+    </p>
+
+    <p>
+      そのため、取引履歴CSVを整理して「意味の変わらない範囲で件数をまとめる」と、
+      計算結果を変えずに取り込み可能な件数まで減らすことができます。
+    </p>
+
+    <p>
+      手作業で行うのは現実的ではないため、
+      CSVを自動で整理する方法を使うのが一般的です。
+    </p>
+  </div>
+
+</section>
+
+
+<section class="section">
+
+  <h2 class="section-title">CSVを軽量化して取り込む方法</h2>
+
+  <div class="card">
+
+    <p>
+      Bitbank / Bitflyer / Coincheck の取引履歴CSVを軽量化し、
+      損益計算サービスに取り込みやすい形式へ変換するツールを公開しています。
+    </p>
+
+    <a href="/tools/crypto-run/" class="btn-primary">
+      仮想通貨CSV圧縮ツールを使う
+    </a>
+
+    <p style="margin-top:1rem;">
+      ※ 登録不要・ブラウザ上で利用できます
+    </p>
+
+  </div>
+
+</section>
+
+</BaseLayout>
