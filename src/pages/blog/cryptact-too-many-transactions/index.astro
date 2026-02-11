@@ -10,11 +10,28 @@ const description =
 
 <section class="section">
 
-  <h1 class="section-title">
-    Cryptactで「取引件数が多すぎます」と表示されたときの対処法
-  </h1>
+  <h2 class="section-title">CSVを軽量化して取り込む方法</h2>
 
-  <div class="card">
+  <div class="article-box">
+
+    <p>
+      Bitbank / Bitflyer / Coincheck の取引履歴CSVを軽量化し、
+      損益計算サービスに取り込みやすい形式へ変換するツールを公開しています。
+    </p>
+
+    <a href="/tools/crypto-run/" class="btn-primary">
+      仮想通貨CSV圧縮ツールを使う
+    </a>
+
+    <p style="margin-top:1rem;">
+      ※ 無料・登録不要・ブラウザ上で利用できます
+    </p>
+
+  </div>
+
+</section>
+
+  <div class="article-box">
     <p>
       仮想通貨の損益計算をしようとしてCryptactにCSVを取り込んだとき、
       「取引件数が多すぎます」「上位プランが必要です」と表示されて進めなくなることがあります。
@@ -37,7 +54,7 @@ const description =
 
   <h2 class="section-title">なぜ「取引件数が多すぎます」と表示されるのか</h2>
 
-  <div class="card">
+  <div class="article-box">
     <p>
       仮想通貨の損益計算サービスは、アップロードされたCSVの「行数（＝取引数）」をもとに
       プラン判定が行われます。
@@ -66,7 +83,7 @@ const description =
 
   <h2 class="section-title">実はエラーではなく「データ量の問題」です</h2>
 
-  <div class="card">
+  <div class="article-box">
     <p>
       この表示は、データが壊れているわけでも、
       CSVの形式が間違っているわけでもありません。
@@ -90,7 +107,7 @@ const description =
 
   <h2 class="section-title">対処法：損益を変えずに取引件数を減らす</h2>
 
-  <div class="card">
+  <div class="article-box">
     <p>
       損益計算では、同じ価格・同じ条件で連続している取引は、
       まとめて扱っても税務上の意味は変わりません。
@@ -114,7 +131,7 @@ const description =
 
   <h2 class="section-title">CSVを軽量化して取り込む方法</h2>
 
-  <div class="card">
+  <div class="article-box">
 
     <p>
       Bitbank / Bitflyer / Coincheck の取引履歴CSVを軽量化し、

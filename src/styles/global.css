@@ -108,6 +108,21 @@ html, body {
   background: #374151;
 }
 
+/* 記事用 */
+.article-box {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1.2rem 1.3rem;
+  margin-top: 0.8rem;
+}
+
+.article-box:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+
 .site-logo {
   font-size: 1.1rem;
   font-weight: 700;
