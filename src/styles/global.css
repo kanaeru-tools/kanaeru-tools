@@ -123,6 +123,12 @@ html, body {
 }
 
 
+.note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
 .site-logo {
   font-size: 1.1rem;
   font-weight: 700;
