@@ -1,0 +1,154 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const title = "仮想通貨の損益計算ができないときの原因と対処法｜Cryptact対応";
+const description =
+  "仮想通貨（暗号資産）の損益計算が進まない・取り込めない場合の原因と対処法を初心者向けに解説。Cryptactでエラーになる主な理由と解決手順をまとめました。";
+---
+
+<BaseLayout title={title} description={description}>
+
+<section class="section">
+
+  <h1 class="section-title">
+    仮想通貨の損益計算ができないときの原因と対処法（Cryptact対応）
+  </h1>
+
+  <p class="top-lead">
+    仮想通貨の確定申告をしようとして損益計算ツールにCSVを取り込んだのに、
+    「進まない」「エラーが出る」「計算が終わらない」といった状態になることがあります。
+  </p>
+
+  <div class="article-box">
+    <p>
+      このとき多くの人が、
+      「自分の操作が間違っているのか」「ツールが壊れているのか」
+      判断できずに作業が止まってしまいます。
+    </p>
+
+    <p>
+      しかし実際には、ほとんどの場合は特定の原因があり、
+      手順を踏めば解決できます。
+    </p>
+
+    <p>
+      この記事では、仮想通貨の損益計算が進まないときに多い原因と、
+      それぞれの対処法を順番に解説します。
+    </p>
+  </div>
+
+</section>
+
+<section class="section">
+
+  <h2 class="section-title">よくある原因①：取引履歴CSVが取り込めない</h2>
+
+  <div class="article-box">
+    <p>
+      まず最初に多いのが、CSV自体がアップロードできないケースです。
+    </p>
+
+    <ul>
+      <li>ファイル形式が違うと表示される</li>
+      <li>取り込みボタンが出ない</li>
+      <li>アップロードしても反映されない</li>
+    </ul>
+
+    <p>
+      この場合、アップロード手順の問題であることが多いため、
+      以下の記事を確認してください。
+    </p>
+
+    <p>
+      → <a href="/blog/cryptact-csv-upload/">CryptactへのCSVアップロード手順を見る</a>
+    </p>
+  </div>
+
+</section>
+
+<section class="section">
+
+  <h2 class="section-title">よくある原因②：取引件数が多すぎて計算できない</h2>
+
+  <div class="article-box">
+    <p>
+      仮想通貨の損益計算で最も多い原因が「取引件数の多さ」です。
+    </p>
+
+    <p>
+      特に以下に当てはまる場合は、この可能性が高いです。
+    </p>
+
+    <ul>
+      <li>積立投資をしている</li>
+      <li>少額売買を繰り返している</li>
+      <li>長期間取引している</li>
+    </ul>
+
+    <p>
+      この場合、データが壊れているのではなく、
+      <strong>CSVの行数が多すぎて処理できない状態</strong>
+      になっています。
+    </p>
+
+    <p>
+      詳しい仕組みと解決方法はこちらで解説しています。
+    </p>
+
+    <p>
+      → <a href="/blog/cryptact-too-many-transactions/">「取引件数が多すぎます」と表示されたときの対処法</a>
+    </p>
+  </div>
+
+</section>
+
+<section class="section">
+
+  <h2 class="section-title">よくある原因③：計算が終わらない・固まる</h2>
+
+  <div class="article-box">
+    <p>
+      CSVは取り込めたのに、計算が終わらない場合もあります。
+    </p>
+
+    <p>
+      これも多くの場合、件数過多が原因です。
+      計算ツールは取引を1件ずつ評価するため、
+      件数が多いほど処理時間が急激に増加します。
+    </p>
+
+    <p>
+      この場合は、取引履歴を整理してから再取り込みすることで改善します。
+    </p>
+  </div>
+
+</section>
+
+<section class="section">
+
+  <h2 class="section-title">解決方法：CSVを整理してから取り込む</h2>
+
+  <div class="article-box">
+
+    <p>
+      取引履歴CSVを整理し、意味を変えずに件数を減らすことで、
+      損益計算ツールに取り込める状態になります。
+    </p>
+
+    <p>
+      ブラウザ上でCSVを軽量化できるツールを公開しています。
+    </p>
+
+    <a href="/tools/crypto-run/" class="btn-primary">
+      仮想通貨CSV圧縮ツールを使う
+    </a>
+
+    <p class="note">
+      ※ 無料・登録不要・インストール不要
+    </p>
+
+  </div>
+
+</section>
+
+</BaseLayout>
