@@ -1,0 +1,228 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const title = "Coincheckの取引履歴CSVのダウンロード方法とCryptactへの取り込み手順｜仮想通貨の確定申告";
+const description =
+  "Coincheckの取引履歴CSVのダウンロード場所が分からない方向けに、PC画面での具体的な手順を初心者向けに解説します。Cryptactでの損益計算に必要なファイルの作り方と、取引件数が多すぎる場合の対処法までまとめました。";
+---
+
+<BaseLayout title={title} description={description}>
+
+<section class="section">
+  <h1 class="section-title">
+    Coincheckの取引履歴CSVのダウンロード方法と<br />
+    Cryptactへの取り込み手順
+  </h1>
+
+  <div class="article-box">
+    <p>
+      仮想通貨の確定申告をしようとして、まず最初に詰まるのが
+      <strong>「Coincheckの取引履歴ってどこからダウンロードするの？」</strong>
+      という点です。
+    </p>
+
+    <p>
+      Coincheckは画面構成が少し分かりづらく、取引履歴CSVの場所が直感的ではありません。
+      この記事では、PC画面を前提に、実際の操作手順を順番に解説します。
+    </p>
+
+    <p>
+      この記事のゴールは次の2つです。
+    </p>
+
+    <ul>
+      <li>Coincheckの取引履歴CSVをダウンロードできるようになる</li>
+      <li>Cryptactで損益計算を開始できる状態にする</li>
+    </ul>
+  </div>
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">① Coincheckにログイン</h2>
+
+  <div class="article-box">
+    <p>
+      まずCoincheckにログインします。
+    </p>
+
+    <p>
+      スマホアプリではなく、<strong>PCブラウザ版</strong>を使用してください。  
+      取引履歴CSVのダウンロードはPC版の方が分かりやすく、確実です。
+    </p>
+  </div>
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">② 取引履歴画面を開く</h2>
+
+  <div class="article-box">
+    <p>
+      ログイン後、画面左側のメニューにある
+      <strong>人型アイコン（アカウントメニュー）</strong>をクリックします。
+    </p>
+
+    <p>
+      その中にある「取引履歴」を選択してください。
+    </p>
+
+    <p>
+      ※ この場所が少し分かりにくく、ウォレットや総資産画面を探してしまう人が多いポイントです。
+    </p>
+  </div>
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">③ 取引履歴ファイルを作成する</h2>
+
+  <div class="article-box">
+
+    <p>
+      取引履歴画面では、CSVはその場でダウンロードされるのではなく
+      <strong>「作成申請」→「集計」→「ダウンロード」</strong>
+      という流れになります。
+    </p>
+
+    <p>
+      年別または月別を選択して、対象期間のデータを作成します。
+    </p>
+
+    <p>
+      確定申告の場合は、基本的に<strong>対象年の1年分</strong>を作成すればOKです。
+    </p>
+
+    <p>
+      ただし、過去に保有していた仮想通貨を売却している場合は、
+      <strong>前年以前の取引履歴も必要になることがあります。</strong>
+    </p>
+
+  </div>
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">④ 集計完了後にCSVをダウンロード</h2>
+
+  <div class="article-box">
+
+    <p>
+      作成を申請すると、しばらく待つと「ダウンロード」ボタンが表示されます。
+    </p>
+
+    <p>
+      ダウンロードされるファイル名は、次のような形式になります。
+    </p>
+
+    <p>
+      <code>trade_history_様式1_コインチェック株式会社_日付.zip</code>
+    </p>
+
+    <p>
+      この形式になっていれば正常です。
+    </p>
+
+    <p>
+      なお、過去の特定年度のデータでファイル形式が異なるケースがあり、
+      そのままでは損益計算サービスに取り込めないことがあります。
+    </p>
+
+  </div>
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">⑤ ZIPファイルを解凍する</h2>
+
+  <div class="article-box">
+
+    <p>
+      ダウンロードされたZIPファイルを、任意の場所に保存します。
+    </p>
+
+    <p>
+      その後、ファイルを右クリックして
+      <strong>「すべて展開」</strong>
+      を選択してください。
+    </p>
+
+    <p>
+      解凍するとCSVファイルが取り出せます。
+    </p>
+
+  </div>
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">⑥ CSVを整形して取り込み可能な形式にする</h2>
+
+  <div class="article-box">
+
+    <p>
+      CoincheckのCSVは、そのままでは損益計算サービスに取り込めない場合があります。
+    </p>
+
+    <p>
+      特に、積立や長期間の取引を行っていると
+      <strong>「取引件数が多すぎます」</strong>
+      と表示され、計算が進まないケースがよくあります。
+    </p>
+
+    <p>
+      その場合は、CSVの情報を保ったまま整理してから取り込む必要があります。
+    </p>
+
+    <p>
+      ブラウザ上でCSVを整形できる無料ツールを公開しています。
+    </p>
+
+    <p>
+      👉 <a href="/tools/crypto-run/" class="btn-primary">仮想通貨CSV圧縮ツールを使う</a>
+    </p>
+
+  </div>
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">⑦ Cryptactへアップロードする</h2>
+
+  <div class="article-box">
+
+    <p>
+      整形したCSVは、Cryptactの「カスタムファイル」機能からアップロードします。
+    </p>
+
+    <p>
+      手順は別記事で詳しく解説しています。
+    </p>
+
+    <p>
+      👉 <a href="/blog/cryptact-csv-upload/">CryptactへのCSVアップロード手順はこちら</a>
+    </p>
+
+  </div>
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">まとめ</h2>
+
+  <div class="article-box">
+    <ul>
+      <li>Coincheckの取引履歴は「人型アイコン → 取引履歴」から作成する</li>
+      <li>CSVは作成申請後にダウンロード可能になる</li>
+      <li>ZIPを解凍してCSVを取り出す</li>
+      <li>取引件数が多い場合は整理してから取り込む</li>
+    </ul>
+
+    <p>
+      仮想通貨の確定申告は最初のCSV取得が一番のハードルです。  
+      一度ダウンロードできれば、あとは損益計算を進められます。
+    </p>
+  </div>
+</section>
+
+</BaseLayout>
