@@ -161,6 +161,23 @@ html, body {
   color: inherit;
 }
 
+/* 次リンクなど */
+.next-action{
+  margin-top:20px;
+  padding-top:10px;
+  border-top:1px solid #e5e7eb;
+}
+
+.next-link{
+  display:block;
+  margin-top:10px;
+  border:2px solid #6366f1;
+  padding:12px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:600;
+}
+
 
 :root {
 	--accent: #2337ff;
