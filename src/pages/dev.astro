@@ -1,22 +1,22 @@
 ---
-const pages = Object.values(import.meta.glob('./blog/**/*.astro', { eager: true }));
+const posts = Object.entries(import.meta.glob('./blog/**/*.astro', { eager: true }));
 ---
 
-<html>
-  <head>
-    <title>Dev Index</title>
-    <style>
-      body{font-family:sans-serif;padding:30px;}
-      a{display:block;margin:8px 0;font-size:18px;}
-    </style>
-  </head>
+<h1>記事一覧（開発用）</h1>
 
-  <body>
-    <h1>記事一覧（開発用）</h1>
+<ul>
+{posts.map(([path, mod]) => {
+  const url = path
+    .replace('./', '/')
+    .replace('/index.astro', '/')
+    .replace('.astro','/');
 
-    {pages.map((page) => (
-      <a href={page.url}>{page.url}</a>
-    ))}
-
-  </body>
-</html>
+  return (
+    <li>
+      <a href={url}>
+        {mod.title ?? url}
+      </a>
+    </li>
+  );
+})}
+</ul>
