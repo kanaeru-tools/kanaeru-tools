@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export const title = "bitFlyerの取引履歴CSVのダウンロード方法｜確定申告用データの取得手順";
+const description =
+  "bitFlyerの取引履歴CSVの場所が分からない方向けに、PC画面でのダウンロード手順を初心者向けに解説します。確定申告に必要なファイルの作成から解凍までまとめました。";
+---
+
+<BaseLayout title={title} description={description}>
+
+<section class="section">
+  <h1 class="section-title">
+    bitFlyerの取引履歴CSVのダウンロード方法<br />
+    （確定申告用データの取得手順）
+  </h1>
+
+  <p class="article-lead">
+    bitFlyerで確定申告をしようとすると、最初に迷うのが
+    「取引履歴CSVがどこにあるのか分からない」という点です。
+    この記事では、PCブラウザから確定申告用データを取得する手順を順番に解説します。
+  </p>
+
+  <div class="article-box">
+    <p>
+      この記事のゴールは次の2つです。
+    </p>
+    <ul>
+      <li>bitFlyerの取引履歴CSVをダウンロードできるようになる</li>
+      <li>損益計算サービスへ取り込み可能な状態にする</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">① bitFlyerにログイン</h2>
+
+  <div class="article-box">
+    <p>
+      まずbitFlyerにログインします。
+    </p>
+
+    <p>
+      今回の手順は <span class="warn">スマホアプリではなくPCブラウザ版</span> を使用してください。
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">② お取引レポートを開く</h2>
+
+  <div class="article-box">
+    <p>
+      画面左側のメニューから <span class="ui">お取引レポート</span> をクリックします。
+    </p>
+
+    <img src="/images/bitflyer-menu.png" alt="bitFlyerのお取引レポートの位置">
+    <p class="img-caption">左メニューの「お取引レポート」をクリックします</p>
+
+    <p>
+      ページが開いたら、<span class="warn">下の方までスクロール</span>してください。
+    </p>
+
+    <img src="/images/bitflyer-scroll.png" alt="bitFlyerの取引履歴CSVの位置">
+    <p class="img-caption">画面下部に「取引履歴（CSV）」の欄があります</p>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">③ 取引履歴CSVを作成してダウンロード</h2>
+
+  <div class="article-box">
+
+    <p>
+      「取引履歴（CSV）」の欄にある <span class="ui">申請</span> をクリックします。
+    </p>
+
+    <p class="note">
+      申請後、すぐにはダウンロードできません。数分待つと「ダウンロード」ボタンが表示されます。
+    </p>
+
+    <p>
+      種類は <span class="key">すべてのお取引</span> を選択すれば問題ありません。
+    </p>
+
+    <p>
+      ダウンロードされるファイル名が
+      <span class="key">TradeHistory_日付.zip</span>
+      の形式になっていれば正常です。
+    </p>
+
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">④ ZIPファイルを解凍する</h2>
+
+  <div class="article-box">
+
+    <p>
+      ダウンロードしたZIPファイルを右クリックし、<span class="ui">すべて展開</span> を選択します。
+    </p>
+
+    <p>
+      解凍するとCSVファイルが取り出せます。
+    </p>
+
+    <p>
+      このCSVを損益計算サービスにアップロードします。
+    </p>
+
+    <p>
+      <a href="/blog/cryptact-csv-upload/">
+      CryptactのカスタムファイルへのCSVアップロード手順はこちら
+      </a>
+    </p>
+
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">まとめ</h2>
+
+  <div class="article-box">
+    <ul>
+      <li>左メニューの「お取引レポート」から取引履歴を作成する</li>
+      <li>画面下部の「取引履歴（CSV）」で申請する</li>
+      <li>ダウンロード後、ZIPを解凍してCSVを取り出す</li>
+    </ul>
+
+    <p>
+      bitFlyerはCSVの場所が分かりづらく、最初のハードルになりやすいポイントです。
+      一度ダウンロードできれば、損益計算へ進めます。
+    </p>
+  </div>
+</section>
+
+<div class="next-action">
+  <p>
+    CSVをアップロードしてエラーが出た場合は、次の記事を確認してください。
+  </p>
+
+  <a href="/blog/cryptact-too-many-transactions/" class="next-link">
+    → エラー「取引件数が多すぎます」の原因と解決方法
+  </a>
+</div>
+
+</BaseLayout>
