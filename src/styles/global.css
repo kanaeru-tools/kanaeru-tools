@@ -194,10 +194,14 @@ html, body {
   padding:0 2px;
 }
 
-/* 文中重要（覚えてほしい知識） */
+/* 文中重要（覚えてほしい知識）角ラベル */
 .key{
-  color:#4338ca;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  padding:2px 6px;
+  border-radius:6px;
   font-weight:600;
+  white-space:nowrap;
 }
 
 
