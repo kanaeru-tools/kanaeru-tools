@@ -186,6 +186,20 @@ html, body {
   margin-bottom:18px;
 }
 
+/* 文字強調系 */
+/* 文中注意（やらないと詰まる系） */
+.warn{
+  background:linear-gradient(transparent 60%, #fde68a 60%);
+  font-weight:600;
+  padding:0 2px;
+}
+
+/* 文中重要（覚えてほしい知識） */
+.key{
+  color:#4338ca;
+  font-weight:600;
+}
+
 
 :root {
 	--accent: #2337ff;
