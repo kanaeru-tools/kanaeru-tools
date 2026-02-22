@@ -178,6 +178,14 @@ html, body {
   font-weight:600;
 }
 
+/* キャプチャ・画像挿入関連 */
+.img-caption{
+  font-size:0.9rem;
+  color:#6b7280;
+  margin-top:-6px;
+  margin-bottom:18px;
+}
+
 
 :root {
 	--accent: #2337ff;
