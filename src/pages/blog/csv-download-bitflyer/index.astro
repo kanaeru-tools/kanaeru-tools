@@ -50,7 +50,7 @@ const description =
 
   <div class="article-box">
     <p>
-      画面左側のメニューから <span class="ui">お取引レポート</span> をクリックします。
+      <span class="key">画面左側のメニューからお取引レポート</span> をクリックします。
     </p>
 
     <img src="/images/csv-download-Bitflyer_step2.png" alt="bitFlyerのお取引レポートの位置">
@@ -74,8 +74,10 @@ const description =
       「取引履歴（CSV）」の欄にある <span class="ui">申請</span> をクリックします。
     </p>
 
-    <p class="note">
+    <p class="">
+      <span class="warn">
       申請後、すぐにはダウンロードできません。少し待つと「ダウンロード」ボタンが表示されます。
+      </span>
     </p>
 
     <p>
@@ -97,25 +99,61 @@ const description =
   <div class="article-box">
 
     <p>
-      ダウンロードしたZIPファイルを右クリックし、<span class="ui">すべて展開</span> を選択します。
+      ダウンロードされたZIPファイルを、任意の場所に保存します。
+    </p>
+
+    <p>
+      その後、
+      <span class="key">ファイルを右クリックして「すべて展開」</span>
+      を選択する等でZIPファイルを解凍します。（他の方法でも問題ありません）
     </p>
 
     <p>
       解凍するとCSVファイルが取り出せます。
     </p>
 
-    <p>
-      このCSVを損益計算サービスにアップロードします。
-    </p>
+  </div>
+
+</section>
+
+
+<section class="section">
+  <h2 class="section-title">⑤ ダウンロード後の作業　損益計算ツールやデータの圧縮</h2>
+
+  <div class="article-box">
 
     <p>
-      <a href="/blog/cryptact-csv-upload/">
-      CryptactのカスタムファイルへのCSVアップロード手順はこちら
-      </a>
+      <span class="warn">ここまでで、ダウンロード自体は終了です。</span>
     </p>
+    
+    <p>
+      以後は、クリプタクト等損益計算ツールにアップしていけばOKです。
+      <span class="key">取引履歴が重くクリプタクトへアップできない / 想定以上の有料プランになってしまった場合、
+      以下のツール（無料）から圧縮が可能です。</span>
+      </br>良ければ利用してみてくださいね。
+    </p>
+    
+    <p>
+      <span class="key">上記ツール利用後の、Cryptackへのアップロード方法の記事もあるので良ければご覧ください。</span>
+    </p>
+
+
+    <div class="next-action">
+      <a href="/tools/crypto-run/" class="next-link">
+        → 取引履歴の圧縮ツール(Cryptact対応)
+      </a>
+    </div>
+
+    <div class="next-action">
+      <a href="/blog/cryptact-csv-upload/" class="next-link">
+        → Cryptact（クリプタクト）に取引履歴CSVをアップロードする方法
+      </a>
+    </div>
 
   </div>
+
 </section>
+
 
 <section class="section">
   <h2 class="section-title">まとめ</h2>
@@ -128,20 +166,11 @@ const description =
     </ul>
 
     <p>
-      bitFlyerはCSVの場所が分かりづらく、最初のハードルになりやすいポイントです。
+      bitFlyerは特にCSVの場所が分かりづらく、最初のハードルになりやすいポイントです。
       一度ダウンロードできれば、損益計算へ進めます。
     </p>
   </div>
 </section>
 
-<div class="next-action">
-  <p>
-    CSVをアップロードしてエラーが出た場合は、次の記事を確認してください。
-  </p>
-
-  <a href="/blog/cryptact-too-many-transactions/" class="next-link">
-    → エラー「取引件数が多すぎます」の原因と解決方法
-  </a>
-</div>
 
 </BaseLayout>
