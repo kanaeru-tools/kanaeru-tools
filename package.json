@@ -6,13 +6,19 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/rss": "^4.0.15",
     "@astrojs/sitemap": "^3.7.0",
     "astro": "^5.16.11",
+    "papaparse": "^5.7.1",
     "sharp": "^0.34.3"
+  },
+  "devDependencies": {
+    "@types/papaparse": "^5.5.2",
+    "vitest": "^5.1.1"
   }
 }
