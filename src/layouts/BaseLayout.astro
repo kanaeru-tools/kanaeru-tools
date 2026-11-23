@@ -1,6 +1,14 @@
 ---
 import "../styles/global.css";
-const { title = "かなえるTools", description = "" } = Astro.props;
+// ogImage はページごとの共有画像（public からのパス）。指定がなければ、これまでの画像を使う
+const {
+  title = "かなえるTools",
+  description = "",
+  ogImage = "/ogp/crypto-run_image_free_light.jpg",
+} = Astro.props;
+const site = Astro.site ?? new URL("https://kanaeru-tools.com");
+const pageUrl = new URL(Astro.url.pathname, site).href;
+const imageUrl = new URL(ogImage, site).href;
 ---
 
 
@@ -14,13 +22,13 @@ const { title = "かなえるTools", description = "" } = Astro.props;
     <meta property="og:title" content={title} />
     <meta property="og:site_name" content="かなえるTools" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://kanaeru-tools.com/" />
-    <meta
-      property="og:image"
-      content="https://kanaeru-tools.com/ogp/crypto-run_image_free_light.jpg"
-    />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href={pageUrl} />
 
     {description && <meta name="description" content={description} />}
+    {description && <meta property="og:description" content={description} />}
 
     <script type="application/ld+json">
       {

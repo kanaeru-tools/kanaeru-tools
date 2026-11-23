@@ -6,7 +6,7 @@ const description =
   "スプレッドシートでつけている仕訳帳（CSV・TSV）を置くだけで、損益計算書と月別のグラフをブラウザの中で作る無料ツールです。帳簿のデータはサーバーに送りません。";
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} ogImage="/ogp/shiwake-kessan.jpg">
   <section class="sk">
     <div class="hero no-print">
       <h1>仕訳帳を置くだけで、<br />損益計算書とグラフが見られる</h1>
@@ -98,6 +98,40 @@ const description =
         <div id="trend-card" class="card"><h3>期ごとの売上高・当期純利益</h3><canvas id="c-trend"></canvas></div>
       </div>
     </div>
+
+    <!-- よくある質問 -->
+    <div class="faq no-print">
+      <h2>よくある質問</h2>
+      <details class="card">
+        <summary>無料で使えますか？</summary>
+        <p>はい、無料です。登録も要りません。</p>
+      </details>
+      <details class="card">
+        <summary>帳簿のデータは、どこかに送られますか？</summary>
+        <p>送られません。ファイルの読み込みから計算・グラフまで、すべてお使いのブラウザの中で行います。かなえるTools のサーバーには、帳簿の中身は届きません。</p>
+      </details>
+      <details class="card">
+        <summary>どんな帳簿のファイルが使えますか？</summary>
+        <p>1行に1つの仕訳を書いた表（仕訳帳）です。「日付」「借方勘定科目」「貸方勘定科目」「金額」の4列があれば読めます。列名が違っていても、読み込んだあとに選び直せます。Google スプレッドシートや Excel からは、CSV で書き出して使ってください。</p>
+        <p>科目ごとに並べた総勘定元帳の形や、借方金額と貸方金額が別の列になっている形には、まだ対応していません。</p>
+      </details>
+      <details class="card">
+        <summary>決算月は何を選べばいいですか？</summary>
+        <p>会社の事業年度の最後の月を選んでください（例：3月決算なら3月）。期は、決算月の翌月から決算月までの12か月で区切ります。決算月がずれると、期の数字も変わるのでご注意ください。</p>
+      </details>
+      <details class="card">
+        <summary>勘定科目に「未選択」と出ました。どうすればいいですか？</summary>
+        <p>ツールが知らない科目です。損益計算書のどこに載せるか（売上高・販売費及び一般管理費など）を選んでください。資産・負債などの損益計算書に関係しない科目は「PL に関係しない」を選びます。選んだ内容は「区分の設定を保存」で保存でき、次回は読み込むだけで同じ設定になります。</p>
+      </details>
+      <details class="card">
+        <summary>結果をそのまま申告や決算書に使えますか？</summary>
+        <p>このツールの結果は、帳簿を確かめるための参考資料です。正確さを保証するものではありません。申告書や決算書の作成には、必ずご自身で確認し、必要に応じて税理士などの専門家にご相談ください。</p>
+      </details>
+      <details class="card">
+        <summary>個人事業主でも使えますか？貸借対照表は出せますか？</summary>
+        <p>今は法人の損益計算書の形で出します。個人事業主の方も数字の確認には使えますが、青色申告決算書の形にはなっていません。貸借対照表は、今後対応する予定です。</p>
+      </details>
+    </div>
   </section>
 </BaseLayout>
 
@@ -121,6 +155,9 @@ const description =
   .sk .card { display: block; background: #fff; padding: 20px 24px; margin: 20px 0; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
   .sk .card h3 { margin-top: 0; font-size: 1.05rem; }
   .sk summary { cursor: pointer; font-weight: bold; }
+  .sk .faq { margin-top: 48px; }
+  .sk .faq .card { margin: 10px 0; padding: 14px 20px; }
+  .sk .faq p { margin: 10px 0 0; }
   .sk .btn-primary { padding: 14px 28px; background: #2563eb; color: #fff; border: 0; border-radius: 10px; font-weight: bold; font-size: 1.05rem; cursor: pointer; }
   .sk .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
   .sk .btn-ghost { display: inline-block; padding: 8px 16px; background: #fff; color: #2563eb; border: 1px solid #2563eb; border-radius: 8px; cursor: pointer; font-size: 0.95rem; }
