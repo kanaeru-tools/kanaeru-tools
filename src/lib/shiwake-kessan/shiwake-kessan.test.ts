@@ -4,6 +4,7 @@ import { expenseBreakdown, monthly } from "./charts";
 import { decodeBytes, parseAmount, parseDate, parseLedger } from "./parse";
 import { STANDARD_ACCOUNTS } from "./accounts";
 import { buildPl, findUnmapped, periodEnd } from "./aggregate";
+import { bsAccounts, buildBs, hasOpeningEntries } from "./bs";
 
 // 架空の会社（3月決算）。1行目はタイトル、2行目がヘッダー
 const SAMPLE = [
@@ -83,6 +84,14 @@ describe("同梱のサンプル", () => {
       expect(b.length).toBeLessThanOrEqual(9);
     }
   });
+
+  it("設立からのデータなので、貸借対照表が釣り合い、マイナスの科目もない", () => {
+    for (const bs of buildBs(r.entries, STANDARD_ACCOUNTS, 3, "balance")) {
+      expect(bs.差額).toBe(0);
+      expect(bs.negatives).toEqual([]);
+      expect(bs.total.純資産).toBeGreaterThan(0);
+    }
+  });
 });
 
 describe("集計", () => {
@@ -110,6 +119,47 @@ describe("集計", () => {
     expect(pl.当期純利益).toBe(86100); // − 法人税等 70,000
     expect(pl.detail.販売費及び一般管理費).toEqual([{ account: "消耗品費", amount: 5000 }]);
     expect(pls[1].total.売上高).toBe(50000);
+  });
+
+  it("貸借対照表：期末の残高に当期純利益を1回だけ足す。マイナスの科目を並べる", () => {
+    const bss = buildBs(parseLedger(SAMPLE).entries, STANDARD_ACCOUNTS, 3, "balance");
+    expect(bss.map((b) => b.period)).toEqual(["2026-03", "2027-03"]);
+    const [b1, b2] = bss;
+    expect(b1.資産合計).toBe(86100); // 普通預金 99,100 − 現金 5,000 − 工具器具備品 8,000
+    expect(b1.detail.純資産).toEqual([{ account: "繰越利益剰余金", amount: 86100 }]); // 損益の振替は足さない
+    expect(b1.差額).toBe(0);
+    expect(b1.negatives.map((l) => l.account).sort()).toEqual(["工具器具備品", "現金"]);
+    expect(b2.total.純資産).toBe(136100); // 前期 86,100 ＋ 当期 50,000
+    expect(b2.資産合計).toBe(136100);
+  });
+
+  it("増減表：その期の増減だけを出し、マイナスの科目は並べない", () => {
+    const [, b2] = buildBs(parseLedger(SAMPLE).entries, STANDARD_ACCOUNTS, 3, "change");
+    expect(b2.detail.流動資産).toEqual([{ account: "普通預金", amount: 50000 }]);
+    expect(b2.total.純資産).toBe(50000);
+    expect(b2.negatives).toEqual([]);
+  });
+
+  it("期首の残高を入力すると足す。食い違いは差額に出る", () => {
+    const { entries } = parseLedger(SAMPLE);
+    const [b1] = buildBs(entries, STANDARD_ACCOUNTS, 3, "balance", { 普通預金: 100000, 資本金: 100000 });
+    expect(b1.資産合計).toBe(186100);
+    expect(b1.total.純資産).toBe(186100);
+    expect(b1.差額).toBe(0);
+    expect(buildBs(entries, STANDARD_ACCOUNTS, 3, "balance", { 普通預金: 1000 })[0].差額).toBe(1000);
+    // 入力欄には、データにない繰越利益剰余金も出す
+    expect(bsAccounts(parseLedger("日付,借方,貸方,金額\n2026/01/01,現金,売上高,1").entries, STANDARD_ACCOUNTS))
+      .toEqual([{ account: "現金", kubun: "流動資産" }, { account: "繰越利益剰余金", kubun: "純資産" }]);
+  });
+
+  it("前期繰越の仕訳を見つける", () => {
+    const text = "日付,借方,貸方,金額\n2025/04/01,普通預金,前期繰越,500\n2025/04/01,前期繰越,繰越利益剰余金,500";
+    const { entries } = parseLedger(text);
+    expect(hasOpeningEntries(entries)).toBe(true);
+    expect(hasOpeningEntries(parseLedger(SAMPLE).entries)).toBe(false);
+    const [b] = buildBs(entries, STANDARD_ACCOUNTS, 3, "balance");
+    expect(b.資産合計).toBe(500);
+    expect(b.差額).toBe(0);
   });
 
   it("利用者が区分を変えると集計に反映される", () => {

@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 
-const title = "【無料】仕訳帳から損益計算書｜かなえるTools";
+const title = "【無料】仕訳帳から決算書（損益計算書・貸借対照表）｜かなえるTools";
 // 検索結果に出る説明文。「無料」を先頭に置く
 const description =
-  "無料・登録不要で何度でも使えます。帳簿（仕訳帳）の CSV・TSV を置くだけで、損益計算書と月別のグラフをブラウザの中で作ります。帳簿のデータはサーバーに送りません。";
+  "無料・登録不要で何度でも使えます。帳簿（仕訳帳）の CSV・TSV を置くだけで、損益計算書・貸借対照表と月別のグラフをブラウザの中で作ります。帳簿のデータはサーバーに送りません。";
 ---
 
 <BaseLayout title={title} description={description} ogImage="/ogp/shiwake-kessan.jpg">
@@ -15,7 +15,8 @@ const description =
         <span class="badge">登録不要</span>
         <span class="badge">データは送信しません</span>
       </p>
-      <h1>帳簿・仕訳帳を置くだけで<br />損益計算書とグラフが見られる</h1>
+      <h1>帳簿・仕訳帳を置くだけで<br />決算書とグラフが見られる</h1>
+      <p class="sub-title">損益計算書・貸借対照表・月別のグラフ</p>
       <p>スプレッドシート、Excel 等でつけている帳簿（仕訳帳）を、会社の成績表の形にして確かめられます。<br />無料なので、月次のチェックや決算前の確認に、何度でもお使いください。</p>
     </div>
 
@@ -70,7 +71,7 @@ const description =
 
       <div class="card">
         <h3>勘定科目の区分</h3>
-        <p class="note">科目ごとに、損益計算書のどこに載せるかを決めます。よく使う科目は自動で当てていますが、会社によって使い方が違うことがあるので、すべて確かめてください。<span class="tag-warn">要確認</span>は会社によって区分が分かれやすい科目、<span class="tag-err">未選択</span>は区分を選ばないと結果を出せない科目です。</p>
+        <p class="note">科目ごとに、決算書のどこに載せるかを決めます。よく使う科目は自動で当てていますが、会社によって使い方が違うことがあるので、すべて確かめてください。<span class="tag-warn">要確認</span>は会社によって区分が分かれやすい科目、<span class="tag-err">未選択</span>は区分を選ばないと結果を出せない科目です。</p>
         <div class="table-wrap"><table id="accounts" class="tbl"></table></div>
         <p class="actions">
           <button id="export-map" type="button" class="btn-ghost">区分の設定を保存（JSON）</button>
@@ -78,16 +79,32 @@ const description =
         </p>
       </div>
 
+      <div class="card">
+        <h3>期首の残高（貸借対照表に使います）</h3>
+        <p class="note">貸借対照表は「期首の残高 ＋ 期間中の増減」で作ります。読み込んだデータに合うものを選んでください。</p>
+        <div class="choices">
+          <label><input type="radio" name="opening-mode" value="start" /> 設立1期目から入っている、または期首の残高の仕訳（前期繰越・開始仕訳）も入っている</label>
+          <label><input type="radio" name="opening-mode" value="input" /> 途中の期から入っている。前期末の残高を入力する</label>
+          <label><input type="radio" name="opening-mode" value="change" /> 途中の期から入っている。期間中の増減だけを見る（貸借対照表は出しません）</label>
+        </div>
+        <p id="opening-detected" class="note" hidden>データの中に「前期繰越」などの仕訳が見つかったので、1つ目を選んでいます。</p>
+        <div id="opening-input" hidden>
+          <p class="note">最初の期の期首（＝前期末）の残高を、前期の貸借対照表のとおりに入力してください（資産・負債・純資産とも、そのままの金額。マイナスは「-」か「△」）。空欄は0円として扱います。</p>
+          <div class="table-wrap"><table id="opening-table" class="tbl"></table></div>
+          <p id="opening-sum" class="note"></p>
+        </div>
+      </div>
+
       <div class="card consent">
         <h3>結果を出す前に</h3>
         <ul class="notice">
           <li>このツールの結果は、帳簿を確かめるための<strong>参考の下書き</strong>です。正確さや完全さを保証するものではありません。</li>
           <li>決算書・申告書の作成や税務調査への対応など、結果の使い方はご自身の責任で判断し、必要に応じて税理士などの専門家にご確認ください。</li>
-          <li>集計は、上で確認・選択した科目の区分に基づきます。</li>
+          <li>集計は、上で確認・選択した科目の区分に基づきます。貸借対照表の残高は、読み込んだ仕訳と、上で選んだ期首の残高の扱いに基づきます。</li>
         </ul>
         <label class="agree"><input id="agree" type="checkbox" /> <a href="/terms/" target="_blank">利用規約</a>と上の注意事項に同意する</label>
         <p id="run-hint" class="note"></p>
-        <button id="run" type="button" class="btn-primary" disabled>損益計算書を出す</button>
+        <button id="run" type="button" class="btn-primary" disabled>決算書を出す</button>
       </div>
     </div>
 
@@ -96,8 +113,13 @@ const description =
       <h2>損益計算書</h2>
       <p class="notice-bar">かなえるTools で作成した参考資料です。正確さを保証するものではありません。</p>
       <div class="table-wrap"><table id="pl" class="tbl pl"></table></div>
+
+      <h2 id="bs-title">貸借対照表</h2>
+      <p id="bs-premise" class="premise"></p>
+      <ul id="bs-notes" class="bs-notes"></ul>
+      <div class="table-wrap"><table id="bs" class="tbl pl"></table></div>
       <p class="actions no-print">
-        <button id="download" type="button" class="btn-ghost">CSV で保存</button>
+        <button id="download" type="button" class="btn-ghost">CSV で保存（損益計算書・貸借対照表）</button>
         <button id="print" type="button" class="btn-ghost">印刷・PDF で保存</button>
       </p>
 
@@ -134,7 +156,16 @@ const description =
       </details>
       <details class="card">
         <summary>勘定科目に「未選択」と出ました。どうすればいいですか？</summary>
-        <p>ツールが知らない科目です。損益計算書のどこに載せるか（売上高・販売費及び一般管理費など）を選んでください。資産・負債などの損益計算書に関係しない科目は「PL に関係しない」を選びます。選んだ内容は「区分の設定を保存」で保存でき、次回は読み込むだけで同じ設定になります。</p>
+        <p>ツールが知らない科目です。決算書のどこに載せるか（売上高・販売費及び一般管理費・流動資産など）を選んでください。諸口のように決算書に載せない科目は「決算書に載せない」を選びます。選んだ内容は「区分の設定を保存」で保存でき、次回は読み込むだけで同じ設定になります。</p>
+      </details>
+      <details class="card">
+        <summary>途中の期のデータしかありません。貸借対照表は出せますか？</summary>
+        <p>貸借対照表は「期首の残高 ＋ 期間中の増減」で作るので、期首の残高が必要です。前期の貸借対照表があれば、「前期末の残高を入力する」を選んで入力してください。会計ソフトの「前期繰越」「開始仕訳」の行がデータに入っていれば、そのまま使えます。</p>
+        <p>期首の残高が分からないときは、「期間中の増減だけを見る」を選ぶと、科目ごとの増減の表を出します。これは貸借対照表ではないのでご注意ください。</p>
+      </details>
+      <details class="card">
+        <summary>預金がマイナスになっている、資産と負債・純資産が合わない、と出ました</summary>
+        <p>期首の残高が入っていない、仕訳の入力漏れや科目の書き間違いがある、などが考えられます。ツールは見えた事実だけを表示しています。帳簿や通帳と見比べて確かめてください。</p>
       </details>
       <details class="card">
         <summary>結果をそのまま申告や決算書に使えますか？</summary>
@@ -142,7 +173,7 @@ const description =
       </details>
       <details class="card">
         <summary>個人事業主でも使えますか？貸借対照表は出せますか？</summary>
-        <p>今は法人の損益計算書の形で出します。個人事業主の方も数字の確認には使えますが、青色申告決算書の形にはなっていません。貸借対照表は、今後対応する予定です。</p>
+        <p>法人の決算書（損益計算書・貸借対照表）の形で出します。個人事業主の方も数字の確認には使えますが、青色申告決算書の形にはなっていません（元入金・事業主貸・事業主借は、純資産の区分を選べば集計できます）。</p>
       </details>
     </div>
   </section>
@@ -153,6 +184,13 @@ const description =
   .sk { max-width: 960px; margin: 0 auto; }
   .sk .hero { text-align: center; padding: 24px 8px 8px; }
   .sk .hero h1 { font-size: 1.7rem; line-height: 1.5; margin-bottom: 8px; }
+  .sk .hero .sub-title { margin: 0 0 8px; color: #1e3a8a; font-weight: bold; }
+  .sk .choices label { display: block; margin: 8px 0; }
+  .sk .choices input { margin-right: 6px; }
+  .sk .opening-in { width: 9em; padding: 4px 6px; text-align: right; font-size: 0.95rem; }
+  .sk .premise { font-weight: bold; color: #1e3a8a; }
+  .sk .bs-notes { padding-left: 1.2em; color: #92400e; }
+  .sk .bs-notes li { margin: 4px 0; }
   @media (max-width: 600px) { .sk .hero h1 { font-size: 1.3rem; } }
   .sk .badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 12px; }
   .sk .badge { padding: 4px 12px; border-radius: 999px; background: #e0f2fe; color: #075985; font-size: 0.9rem; font-weight: bold; }
@@ -210,9 +248,10 @@ const description =
 
 <script>
   import { Chart, registerables } from "chart.js";
-  import { decodeBytes, parseTable, detectHeaderRow, guessColumns, toEntries, type ColumnMap, type Entry, type ParseIssue } from "../../../lib/shiwake-kessan/parse";
-  import { STANDARD_ACCOUNTS, PL_KUBUN, isPl, lookupAccount, type AccountMap, type Kubun } from "../../../lib/shiwake-kessan/accounts";
+  import { decodeBytes, parseTable, detectHeaderRow, guessColumns, toEntries, parseAmount, type ColumnMap, type Entry, type ParseIssue } from "../../../lib/shiwake-kessan/parse";
+  import { STANDARD_ACCOUNTS, PL_KUBUN, BS_KUBUN, isPl, lookupAccount, type AccountMap, type Kubun } from "../../../lib/shiwake-kessan/accounts";
   import { buildPl, findUnmapped, isClosingEntry, periodEnd, type PlStatement } from "../../../lib/shiwake-kessan/aggregate";
+  import { buildBs, bsAccounts, hasOpeningEntries, type BsStatement } from "../../../lib/shiwake-kessan/bs";
   import { monthly, expenseBreakdown } from "../../../lib/shiwake-kessan/charts";
 
   Chart.register(...registerables);
@@ -226,12 +265,18 @@ const description =
     issues: ParseIssue[];
   }
 
-  const NOT_PL = "PL外";
+  // start：期首は0円（設立から、または前期繰越の仕訳がある）。input：前期末の残高を入力。change：増減だけ
+  type OpeningMode = "start" | "input" | "change";
   const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
   const files: LoadedFile[] = [];
   let userMap: AccountMap = {};
   let closingMonth = 3;
   let results: PlStatement[] = [];
+  let bsResults: BsStatement[] = [];
+  let openingMode: OpeningMode = "change";
+  let openingModeChosen = false; // 利用者が選んだら、ファイルを足しても自動で変えない
+  let opening: Record<string, number> = {};
+  let bsModeShown: OpeningMode = "change";
   const charts: Chart[] = [];
 
   // 文字はすべて textContent で入れる（ファイルの中身を HTML として解釈しない）
@@ -256,6 +301,8 @@ const description =
       files.push(f);
     }
     guessClosingMonth();
+    // 分からないときは、貸借対照表と誤解されない「増減だけ」にしておく
+    if (!openingModeChosen) openingMode = hasOpeningEntries(allEntries()) ? "start" : "change";
     $("step2").hidden = false;
     $("step3").hidden = true;
     renderStep2();
@@ -301,6 +348,10 @@ const description =
     const res = await fetch("/samples/shiwake-kessan/sample.csv");
     files.length = 0;
     userMap = {};
+    opening = {};
+    // サンプルは設立1期目からの仕訳
+    openingMode = "start";
+    openingModeChosen = true;
     await loadFiles([{ name: "サンプル（架空の賃貸業の会社・3月決算）.csv", bytes: new Uint8Array(await res.arrayBuffer()) }]);
   });
 
@@ -311,6 +362,7 @@ const description =
     renderFiles();
     renderChecks();
     renderAccounts();
+    renderOpening();
     updateRunButton();
   }
 
@@ -385,7 +437,11 @@ const description =
     }
     const order = (a: string) => {
       const r = lookupAccount(a, map);
-      return !r ? 0 : r.check ? 1 : isPl(r.kubun) ? 2 + PL_KUBUN.indexOf(r.kubun as never) : 20;
+      if (!r) return 0;
+      if (r.check) return 1;
+      if (isPl(r.kubun)) return 2 + PL_KUBUN.indexOf(r.kubun);
+      const bi = BS_KUBUN.indexOf(r.kubun as never);
+      return bi >= 0 ? 20 + bi : 40;
     };
     const names = [...stat.keys()].sort((a, b) => order(a) - order(b) || a.localeCompare(b, "ja"));
     table.append(el("tr", {}, el("th", {}, "勘定科目"), el("th", {}, "区分"), el("th", { class: "num" }, "使われた行数"), el("th", {}, "")));
@@ -393,14 +449,14 @@ const description =
       const r = lookupAccount(name, map);
       const sel = el("select");
       if (!r) sel.append(el("option", { value: "" }, "（選んでください）"));
-      for (const k of PL_KUBUN) sel.append(el("option", { value: k }, k));
-      sel.append(el("option", { value: NOT_PL }, "PL に関係しない（資産・負債・純資産・諸口など）"));
-      sel.value = !r ? "" : isPl(r.kubun) ? r.kubun : NOT_PL;
+      const pl = el("optgroup", { label: "損益計算書" });
+      for (const k of PL_KUBUN) pl.append(el("option", { value: k }, k));
+      const bs = el("optgroup", { label: "貸借対照表" });
+      for (const k of BS_KUBUN) bs.append(el("option", { value: k }, k));
+      sel.append(pl, bs, el("option", { value: "対象外" }, "決算書に載せない（諸口・損益など）"));
+      sel.value = r?.kubun ?? "";
       sel.addEventListener("change", () => {
-        const std = STANDARD_ACCOUNTS[name];
-        // PL 以外を選んだときは、標準の BS の区分があればそれを残す（v2 の BS で使う）
-        const kubun: Kubun = sel.value === NOT_PL ? (std && !isPl(std.kubun) ? std.kubun : "対象外") : (sel.value as Kubun);
-        userMap[name] = { kubun };
+        userMap[name] = { kubun: sel.value as Kubun };
         renderStep2();
       });
       const tag = !r ? el("span", { class: "tag-err" }, "未選択") : r.check && !userMap[name] ? el("span", { class: "tag-warn" }, "要確認") : "";
@@ -416,7 +472,9 @@ const description =
       const r = lookupAccount(name, map);
       if (r) out[name] = { kubun: r.kubun };
     }
-    download("勘定科目の区分.json", JSON.stringify({ tool: "kanaeru-tools/shiwake-kessan", version: 1, accounts: out }, null, 2), "application/json");
+    const body: Record<string, unknown> = { tool: "kanaeru-tools/shiwake-kessan", version: 2, accounts: out, openingMode };
+    if (openingMode === "input") body.opening = opening;
+    download("勘定科目の区分.json", JSON.stringify(body, null, 2), "application/json");
   });
   $<HTMLInputElement>("import-map").addEventListener("change", async (e) => {
     const input = e.target as HTMLInputElement;
@@ -429,11 +487,67 @@ const description =
       for (const [name, rule] of Object.entries(accounts as Record<string, { kubun: Kubun }>)) {
         if (rule && typeof rule.kubun === "string") userMap[name] = { kubun: rule.kubun };
       }
+      if (["start", "input", "change"].includes(json.openingMode)) {
+        openingMode = json.openingMode;
+        openingModeChosen = true;
+      }
+      if (json.opening && typeof json.opening === "object") {
+        opening = Object.fromEntries(Object.entries(json.opening as Record<string, unknown>).filter(([, v]) => typeof v === "number")) as Record<string, number>;
+      }
       renderStep2();
     } catch {
       alert("区分の設定ファイルを読み込めませんでした。このツールで保存した JSON ファイルを選んでください。");
     }
   });
+
+  // ---------- 期首の残高 ----------
+  const ASSET_KUBUN = new Set(["流動資産", "固定資産", "繰延資産"]);
+  function renderOpening() {
+    for (const r of document.querySelectorAll<HTMLInputElement>('input[name="opening-mode"]')) r.checked = r.value === openingMode;
+    $("opening-detected").hidden = !(openingMode === "start" && !openingModeChosen && hasOpeningEntries(allEntries()));
+    $("opening-input").hidden = openingMode !== "input";
+    if (openingMode !== "input") return;
+    const table = $("opening-table");
+    table.replaceChildren(el("tr", {}, el("th", {}, "勘定科目"), el("th", {}, "区分"), el("th", { class: "num" }, "前期末の残高（円）")));
+    for (const { account, kubun } of bsAccounts(allEntries(), currentMap())) {
+      const input = el("input", { type: "text", inputmode: "numeric", class: "opening-in" }) as HTMLInputElement;
+      input.value = opening[account] ? opening[account].toLocaleString("ja-JP") : "";
+      input.addEventListener("change", () => {
+        const n = input.value.trim() === "" ? 0 : parseAmount(input.value);
+        if (n === null) {
+          input.value = "";
+          delete opening[account];
+        } else {
+          opening[account] = n;
+          input.value = n ? n.toLocaleString("ja-JP") : "";
+        }
+        renderOpeningSum();
+        $("step3").hidden = true;
+      });
+      table.append(el("tr", {}, el("td", {}, account), el("td", {}, kubun), el("td", { class: "num" }, input)));
+    }
+    renderOpeningSum();
+  }
+
+  function renderOpeningSum() {
+    let asset = 0;
+    let other = 0;
+    for (const { account, kubun } of bsAccounts(allEntries(), currentMap())) {
+      if (ASSET_KUBUN.has(kubun)) asset += opening[account] ?? 0;
+      else other += opening[account] ?? 0;
+    }
+    const diff = asset - other;
+    $("opening-sum").textContent = `入力した残高：資産 ${yen(asset)}円 ／ 負債・純資産 ${yen(other)}円` + (diff ? `（差 ${yen(diff)}円。前期の貸借対照表と見比べてください）` : "（一致しています）");
+  }
+
+  for (const r of document.querySelectorAll<HTMLInputElement>('input[name="opening-mode"]')) {
+    r.addEventListener("change", () => {
+      openingMode = r.value as OpeningMode;
+      openingModeChosen = true;
+      renderOpening();
+      $("step3").hidden = true;
+    });
+  }
 
   function updateRunButton() {
     const unmapped = findUnmapped(allEntries(), currentMap());
@@ -448,7 +562,10 @@ const description =
   // ---------- ③ 結果 ----------
   $("run").addEventListener("click", () => {
     results = buildPl(allEntries(), currentMap(), closingMonth);
+    bsModeShown = openingMode;
+    bsResults = buildBs(allEntries(), currentMap(), closingMonth, openingMode === "change" ? "change" : "balance", openingMode === "input" ? opening : {});
     renderPl();
+    renderBs();
     const sel = $<HTMLSelectElement>("period");
     sel.replaceChildren(...results.map((p) => el("option", { value: p.period }, periodLabel(p.period))));
     sel.value = results.at(-1)?.period ?? "";
@@ -490,6 +607,53 @@ const description =
     const table = $("pl");
     table.replaceChildren(el("tr", {}, el("th", {}, "（単位：円）"), ...results.map((p) => el("th", { class: "num" }, periodLabel(p.period)))));
     for (const r of plRows()) table.append(el("tr", { class: r.kind }, el("td", {}, r.label), ...r.values.map((v) => el("td", { class: "num" }, yen(v)))));
+  }
+
+  // 増減だけのときは、貸借対照表という言葉を使わない
+  const bsTitle = () => (bsModeShown === "change" ? "期間中の増減表（残高ではありません）" : "貸借対照表");
+  const bsPremise = () =>
+    bsModeShown === "change"
+      ? "期首の残高が入っていないため、各期の中で増えた・減った金額だけを出しています。期末の残高ではないので、貸借対照表としては使えません。"
+      : bsModeShown === "input"
+        ? "期首の残高：入力した前期末の残高を使っています。"
+        : "期首の残高：0円とみなしています（設立1期目から、または前期繰越の仕訳が入っている前提）。";
+
+  function bsRows(): PlRow[] {
+    const rows: PlRow[] = [];
+    const block = (k: (typeof BS_KUBUN)[number]) => {
+      const values = bsResults.map((b) => b.total[k]);
+      if (values.every((v) => v === 0)) return;
+      rows.push({ label: k, kind: "head", values });
+      const accounts = [...new Set(bsResults.flatMap((b) => b.detail[k].map((l) => l.account)))];
+      for (const a of accounts) rows.push({ label: a, kind: "item", values: bsResults.map((b) => b.detail[k].find((l) => l.account === a)?.amount ?? 0) });
+    };
+    block("流動資産");
+    block("固定資産");
+    block("繰延資産");
+    rows.push({ label: "資産合計", kind: "sub", values: bsResults.map((b) => b.資産合計) });
+    block("流動負債");
+    block("固定負債");
+    rows.push({ label: "負債合計", kind: "sub", values: bsResults.map((b) => b.負債合計) });
+    block("純資産");
+    rows.push({ label: "純資産合計", kind: "sub", values: bsResults.map((b) => b.純資産合計) });
+    rows.push({ label: "負債・純資産合計", kind: "total", values: bsResults.map((b) => b.負債純資産合計) });
+    return rows;
+  }
+
+  function renderBs() {
+    $("bs-title").textContent = bsTitle();
+    $("bs-premise").textContent = bsPremise();
+    // 推測（データが抜けている等）は書かず、見えた事実だけを並べる
+    const notes = $("bs-notes");
+    notes.replaceChildren();
+    for (const b of bsResults) {
+      if (b.negatives.length) notes.append(el("li", {}, `${periodLabel(b.period)}末にマイナスになっている科目：${b.negatives.map((l) => `${l.account} ${yen(l.amount)}円`).join("、")}`));
+      if (b.差額 !== 0) notes.append(el("li", {}, `${periodLabel(b.period)}：資産合計と負債・純資産合計が ${yen(Math.abs(b.差額))}円 ずれています。期首の残高の入力や、「決算書に載せない」にした科目（諸口など）に残った金額を確かめてください。`));
+    }
+    const head = bsModeShown === "change" ? "（単位：円・期中の増減）" : "（単位：円・期末の残高）";
+    const table = $("bs");
+    table.replaceChildren(el("tr", {}, el("th", {}, head), ...bsResults.map((b) => el("th", { class: "num" }, periodLabel(b.period)))));
+    for (const r of bsRows()) table.append(el("tr", { class: r.kind }, el("td", {}, r.label), ...r.values.map((v) => el("td", { class: "num" }, yen(v)))));
   }
 
   function renderCharts() {
@@ -540,12 +704,20 @@ const description =
 
   $("download").addEventListener("click", () => {
     const q = (s: string) => `"${s.replace(/"/g, '""')}"`;
+    const table = (rows: PlRow[]) => rows.map((r) => [q(r.label), ...r.values.map((v) => String(Math.round(v)))].join(","));
     const lines = [
       q("かなえるTools で作成した参考資料です。正確さを保証するものではありません。"),
+      "",
+      q("損益計算書"),
       ["項目", ...results.map((p) => periodLabel(p.period))].map(q).join(","),
-      ...plRows().map((r) => [q(r.label), ...r.values.map((v) => String(Math.round(v)))].join(",")),
+      ...table(plRows()),
+      "",
+      q(bsTitle()),
+      q(bsPremise()),
+      ["項目", ...bsResults.map((b) => periodLabel(b.period))].map(q).join(","),
+      ...table(bsRows()),
     ];
-    download("損益計算書.csv", "﻿" + lines.join("\r\n") + "\r\n", "text/csv");
+    download("決算書.csv", "﻿" + lines.join("\r\n") + "\r\n", "text/csv");
   });
   $("print").addEventListener("click", () => window.print());
 </script>
