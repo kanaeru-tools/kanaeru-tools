@@ -1,4 +1,6 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { expenseBreakdown, monthly } from "./charts";
 import { decodeBytes, parseAmount, parseDate, parseLedger } from "./parse";
 import { STANDARD_ACCOUNTS } from "./accounts";
 import { buildPl, findUnmapped, periodEnd } from "./aggregate";
@@ -59,6 +61,27 @@ describe("読み込み", () => {
     // 「日付」を Shift_JIS にしたバイト列
     const sjis = new Uint8Array([0x93, 0xfa, 0x95, 0x74]);
     expect(decodeBytes(sjis)).toBe("日付");
+  });
+});
+
+describe("同梱のサンプル", () => {
+  const bytes = readFileSync(new URL("../../../public/samples/shiwake-kessan/sample.csv", import.meta.url));
+  const r = parseLedger(decodeBytes(bytes));
+
+  it("読めない行も、区分のない科目もない", () => {
+    expect(r.issues).toEqual([]);
+    expect(findUnmapped(r.entries, STANDARD_ACCOUNTS)).toEqual([]);
+  });
+
+  it("月別の合計が PL と合う", () => {
+    for (const pl of buildPl(r.entries, STANDARD_ACCOUNTS, 3)) {
+      const m = monthly(r.entries, STANDARD_ACCOUNTS, 3, pl.period);
+      expect(m).toHaveLength(12);
+      expect(m.reduce((s, x) => s + x.売上高, 0)).toBe(pl.total.売上高);
+      expect(m.reduce((s, x) => s + x.当期純利益, 0)).toBe(pl.当期純利益);
+      const b = expenseBreakdown(pl);
+      expect(b.length).toBeLessThanOrEqual(9);
+    }
   });
 });
 

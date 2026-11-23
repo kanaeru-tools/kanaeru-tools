@@ -1,0 +1,495 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const title = "仕訳帳から損益計算書｜かなえるTools";
+const description =
+  "スプレッドシートでつけている仕訳帳（CSV・TSV）を置くだけで、損益計算書と月別のグラフをブラウザの中で作る無料ツールです。帳簿のデータはサーバーに送りません。";
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="sk">
+    <div class="hero no-print">
+      <h1>仕訳帳を置くだけで、<br />損益計算書とグラフが見られる</h1>
+      <p>スプレッドシートでつけている帳簿（仕訳帳）を、会社の成績表の形にして確かめられます。</p>
+    </div>
+
+    <!-- ① 読み込み -->
+    <label id="drop" class="drop no-print" for="file">
+      <input id="file" type="file" accept=".csv,.tsv,.txt" multiple hidden />
+      <span class="drop-icon" aria-hidden="true">📄</span>
+      <strong>ここに仕訳帳のファイルをドロップ</strong>
+      <span>またはクリックしてファイルを選ぶ（CSV・TSV、複数の期をまとめて入れられます）</span>
+    </label>
+    <p class="center no-print">
+      <button id="sample" type="button" class="btn-ghost">架空のサンプルで試してみる</button>
+    </p>
+    <p class="note center no-print">ファイルはお使いのブラウザの中だけで処理し、サーバーには送りません。</p>
+
+    <details class="card no-print">
+      <summary>読み込めるファイルの形</summary>
+      <ul>
+        <li>1行に1つの仕訳を書いた表（仕訳帳）。「日付」「借方勘定科目」「貸方勘定科目」「金額」の4列があれば読めます（列名が違っても、あとで選べます）。</li>
+        <li>CSV（カンマ区切り）・TSV（タブ区切り）。文字コードは UTF-8 と Shift_JIS に対応しています。</li>
+        <li>表の上にタイトルの行があっても構いません。摘要・取引先などのほかの列は使いません。</li>
+        <li>スプレッドシートからは「ファイル → ダウンロード → CSV」で書き出せます。</li>
+      </ul>
+    </details>
+
+    <!-- ② 確認 -->
+    <div id="step2" class="no-print" hidden>
+      <h2>読み込んだ内容の確認</h2>
+
+      <div class="card">
+        <h3>ファイルと列</h3>
+        <div id="files"></div>
+        <p class="field">
+          <label>決算月
+            <select id="closing"></select>
+          </label>
+          <span class="note">期は、決算月の翌月から決算月までの12か月で区切ります。</span>
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>点検の結果</h3>
+        <ul id="checks" class="checks"></ul>
+      </div>
+
+      <div class="card">
+        <h3>勘定科目の区分</h3>
+        <p class="note">科目ごとに、損益計算書のどこに載せるかを決めます。よく使う科目は自動で当てていますが、会社によって使い方が違うことがあるので、すべて確かめてください。<span class="tag-warn">要確認</span>は会社によって区分が分かれやすい科目、<span class="tag-err">未選択</span>は区分を選ばないと結果を出せない科目です。</p>
+        <div class="table-wrap"><table id="accounts" class="tbl"></table></div>
+        <p class="actions">
+          <button id="export-map" type="button" class="btn-ghost">区分の設定を保存（JSON）</button>
+          <label class="btn-ghost">区分の設定を読み込む<input id="import-map" type="file" accept=".json" hidden /></label>
+        </p>
+      </div>
+
+      <div class="card consent">
+        <h3>結果を出す前に</h3>
+        <ul class="notice">
+          <li>このツールの結果は、帳簿を確かめるための<strong>参考の下書き</strong>です。正確さや完全さは保証しません。</li>
+          <li>決算書・申告書の作成や税務調査への対応など、結果の使い方はご自身の責任で判断し、必要に応じて税理士などの専門家にご確認ください。</li>
+          <li>集計は、上で確認・選択した科目の区分に基づきます。</li>
+        </ul>
+        <label class="agree"><input id="agree" type="checkbox" /> <a href="/terms/" target="_blank">利用規約</a>と上の注意事項に同意する</label>
+        <p id="run-hint" class="note"></p>
+        <button id="run" type="button" class="btn-primary" disabled>損益計算書を出す</button>
+      </div>
+    </div>
+
+    <!-- ③ 結果 -->
+    <div id="step3" hidden>
+      <h2>損益計算書</h2>
+      <p class="notice-bar">かなえるTools で作成した参考資料です。正確さは保証しません。</p>
+      <div class="table-wrap"><table id="pl" class="tbl pl"></table></div>
+      <p class="actions no-print">
+        <button id="download" type="button" class="btn-ghost">CSV で保存</button>
+        <button id="print" type="button" class="btn-ghost">印刷・PDF で保存</button>
+      </p>
+
+      <h2>グラフ</h2>
+      <p class="field no-print">
+        <label>表示する期 <select id="period"></select></label>
+      </p>
+      <div class="chart-grid">
+        <div class="card"><h3>月別の売上高・費用・当期純利益</h3><canvas id="c-monthly"></canvas></div>
+        <div class="card"><h3>費用の内訳</h3><canvas id="c-breakdown"></canvas></div>
+        <div id="trend-card" class="card"><h3>期ごとの売上高・当期純利益</h3><canvas id="c-trend"></canvas></div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style is:global>
+  /* JavaScript で作る行にも当たるよう、グローバルにして .sk の中だけに効かせる */
+  .sk { max-width: 960px; margin: 0 auto; }
+  .sk .hero { text-align: center; padding: 24px 8px 8px; }
+  .sk .hero h1 { font-size: 1.7rem; line-height: 1.5; margin-bottom: 8px; }
+  .sk .drop {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    margin: 24px 0 12px; padding: 56px 20px; border: 3px dashed #2563eb; border-radius: 18px;
+    background: #eff6ff; color: #1e3a8a; text-align: center; cursor: pointer; transition: background 0.15s;
+  }
+  .sk .drop strong { font-size: 1.35rem; }
+  .sk .drop.over, .sk .drop:hover { background: #dbeafe; }
+  .sk .drop-icon { font-size: 2.6rem; }
+  .sk .center { text-align: center; }
+  .sk .note { font-size: 0.88rem; color: #555; }
+  .sk .card { display: block; background: #fff; padding: 20px 24px; margin: 20px 0; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  .sk .card h3 { margin-top: 0; font-size: 1.05rem; }
+  .sk summary { cursor: pointer; font-weight: bold; }
+  .sk .btn-primary { padding: 14px 28px; background: #2563eb; color: #fff; border: 0; border-radius: 10px; font-weight: bold; font-size: 1.05rem; cursor: pointer; }
+  .sk .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+  .sk .btn-ghost { display: inline-block; padding: 8px 16px; background: #fff; color: #2563eb; border: 1px solid #2563eb; border-radius: 8px; cursor: pointer; font-size: 0.95rem; }
+  .sk .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sk .field { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 8px 0; }
+  .sk select { padding: 4px 6px; font-size: 0.95rem; }
+  .sk .table-wrap { overflow-x: auto; }
+  .sk .tbl { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+  .sk .tbl th, .sk .tbl td { border-bottom: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; white-space: nowrap; }
+  .sk .tbl td.num, .sk .tbl th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sk .tbl tr.unmapped { background: #fee2e2; }
+  .sk .tbl tr.check { background: #fef9c3; }
+  .sk .tag-warn, .sk .tag-err { display: inline-block; padding: 0 6px; border-radius: 4px; font-size: 0.8rem; margin: 0 2px; }
+  .sk .tag-warn { background: #fef08a; }
+  .sk .tag-err { background: #fecaca; }
+  .sk .checks li.ok::marker { content: "✓ "; color: #16a34a; }
+  .sk .checks li.ng::marker { content: "！ "; color: #dc2626; }
+  .sk .checks li.ng { color: #b91c1c; }
+  .sk .consent { border: 2px solid #f59e0b; }
+  .sk .notice { padding-left: 1.2em; }
+  .sk .agree { display: block; margin: 12px 0; font-weight: bold; }
+  .sk .agree input { transform: scale(1.3); margin-right: 6px; }
+  .sk .notice-bar { background: #fef3c7; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; }
+  .sk .pl tr.head td { font-weight: bold; background: #f1f5f9; }
+  .sk .pl tr.item td:first-child { padding-left: 2em; color: #444; }
+  .sk .pl tr.sub td { font-weight: bold; border-top: 2px solid #94a3b8; }
+  .sk .pl tr.total td { font-weight: bold; font-size: 1.05rem; background: #dbeafe; border-top: 2px solid #1e3a8a; }
+  @media print {
+    .no-print, .site-header, footer { display: none !important; }
+    .sk .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+  }
+</style>
+
+<script>
+  import { Chart, registerables } from "chart.js";
+  import { decodeBytes, parseTable, detectHeaderRow, guessColumns, toEntries, type ColumnMap, type Entry, type ParseIssue } from "../../../lib/shiwake-kessan/parse";
+  import { STANDARD_ACCOUNTS, PL_KUBUN, isPl, lookupAccount, type AccountMap, type Kubun } from "../../../lib/shiwake-kessan/accounts";
+  import { buildPl, findUnmapped, isClosingEntry, periodEnd, type PlStatement } from "../../../lib/shiwake-kessan/aggregate";
+  import { monthly, expenseBreakdown } from "../../../lib/shiwake-kessan/charts";
+
+  Chart.register(...registerables);
+
+  interface LoadedFile {
+    name: string;
+    rows: string[][];
+    headerRow: number;
+    cols: Partial<ColumnMap>;
+    entries: Entry[];
+    issues: ParseIssue[];
+  }
+
+  const NOT_PL = "PL外";
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const files: LoadedFile[] = [];
+  let userMap: AccountMap = {};
+  let closingMonth = 3;
+  let results: PlStatement[] = [];
+  const charts: Chart[] = [];
+
+  // 文字はすべて textContent で入れる（ファイルの中身を HTML として解釈しない）
+  function el<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, string> = {}, ...children: (Node | string)[]) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+    for (const c of children) e.append(c);
+    return e;
+  }
+  const yen = (n: number) => (n < 0 ? "△" : "") + Math.abs(Math.round(n)).toLocaleString("ja-JP");
+  const periodLabel = (p: string) => `${p.slice(0, 4)}年${Number(p.slice(5, 7))}月期`;
+  const currentMap = (): AccountMap => ({ ...STANDARD_ACCOUNTS, ...userMap });
+  const allEntries = () => files.flatMap((f) => f.entries);
+
+  // ---------- ① 読み込み ----------
+  async function loadFiles(list: { name: string; bytes: Uint8Array }[]) {
+    for (const { name, bytes } of list) {
+      const rows = parseTable(decodeBytes(bytes));
+      const headerRow = detectHeaderRow(rows);
+      const f: LoadedFile = { name, rows, headerRow: Math.max(headerRow, 0), cols: headerRow >= 0 ? guessColumns(rows[headerRow]) : {}, entries: [], issues: [] };
+      reparse(f);
+      files.push(f);
+    }
+    guessClosingMonth();
+    $("step2").hidden = false;
+    $("step3").hidden = true;
+    renderStep2();
+    $("step2").scrollIntoView({ behavior: "smooth" });
+  }
+
+  function reparse(f: LoadedFile) {
+    const c = f.cols;
+    if (c.date === undefined || c.debit === undefined || c.credit === undefined || c.amount === undefined) {
+      f.entries = [];
+      f.issues = [];
+      return;
+    }
+    const r = toEntries(f.rows, f.headerRow, c as ColumnMap);
+    f.entries = r.entries;
+    f.issues = r.issues;
+  }
+
+  // 決算振替の仕訳の月を決算月とみなす。なければ3月
+  function guessClosingMonth() {
+    const closing = allEntries().find(isClosingEntry);
+    if (closing) closingMonth = Number(closing.date.slice(5, 7));
+  }
+
+  const drop = $("drop");
+  const readInput = async (fl: FileList | null) => {
+    if (!fl || fl.length === 0) return;
+    await loadFiles(await Promise.all([...fl].map(async (f) => ({ name: f.name, bytes: new Uint8Array(await f.arrayBuffer()) }))));
+  };
+  $<HTMLInputElement>("file").addEventListener("change", (e) => {
+    const input = e.target as HTMLInputElement;
+    readInput(input.files);
+    input.value = "";
+  });
+  drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+  drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+  drop.addEventListener("drop", (e) => {
+    e.preventDefault();
+    drop.classList.remove("over");
+    readInput(e.dataTransfer?.files ?? null);
+  });
+  $("sample").addEventListener("click", async () => {
+    const res = await fetch("/samples/shiwake-kessan/sample.csv");
+    files.length = 0;
+    userMap = {};
+    await loadFiles([{ name: "サンプル（架空の賃貸業の会社・3月決算）.csv", bytes: new Uint8Array(await res.arrayBuffer()) }]);
+  });
+
+  // ---------- ② 確認 ----------
+  // 内容を変えたら、前の結果は隠して出し直してもらう
+  function renderStep2() {
+    $("step3").hidden = true;
+    renderFiles();
+    renderChecks();
+    renderAccounts();
+    updateRunButton();
+  }
+
+  function renderFiles() {
+    const box = $("files");
+    box.replaceChildren();
+    const labels: [keyof ColumnMap, string][] = [["date", "日付"], ["debit", "借方勘定科目"], ["credit", "貸方勘定科目"], ["amount", "金額"]];
+    files.forEach((f, idx) => {
+      const header = f.rows[f.headerRow] ?? [];
+      const line = el("div", { class: "field" }, el("strong", {}, f.name), `（仕訳 ${f.entries.length.toLocaleString()} 行）`);
+      for (const [key, label] of labels) {
+        const sel = el("select");
+        sel.append(el("option", { value: "" }, "（選んでください）"));
+        header.forEach((h, i) => sel.append(el("option", { value: String(i) }, h || `${i + 1}列目`)));
+        sel.value = f.cols[key] === undefined ? "" : String(f.cols[key]);
+        sel.addEventListener("change", () => {
+          f.cols[key] = sel.value === "" ? undefined : Number(sel.value);
+          reparse(f);
+          renderStep2();
+        });
+        line.append(el("label", {}, `${label} `, sel));
+      }
+      const remove = el("button", { type: "button", class: "btn-ghost" }, "外す");
+      remove.addEventListener("click", () => {
+        files.splice(idx, 1);
+        if (files.length === 0) $("step2").hidden = true;
+        renderStep2();
+      });
+      line.append(remove);
+      box.append(line);
+    });
+
+    const sel = $<HTMLSelectElement>("closing");
+    sel.replaceChildren(...Array.from({ length: 12 }, (_, i) => el("option", { value: String(i + 1) }, `${i + 1}月`)));
+    sel.value = String(closingMonth);
+  }
+
+  $<HTMLSelectElement>("closing").addEventListener("change", (e) => {
+    closingMonth = Number((e.target as HTMLSelectElement).value);
+    renderChecks();
+  });
+
+  function renderChecks() {
+    const ul = $("checks");
+    ul.replaceChildren();
+    const item = (ok: boolean, text: string, detail?: string) => {
+      const li = el("li", { class: ok ? "ok" : "ng" }, text);
+      if (detail) li.append(el("div", { class: "note" }, detail));
+      ul.append(li);
+    };
+    const noCols = files.filter((f) => f.entries.length === 0 && f.issues.length === 0);
+    if (noCols.length) item(false, `列が決まっていないファイルがあります：${noCols.map((f) => f.name).join("、")}`, "上の「ファイルと列」で、4つの列を選んでください。");
+    for (const [kind, label] of [["amount", "金額"], ["date", "日付"], ["account", "勘定科目が空欄"]] as const) {
+      const list = files.flatMap((f) => f.issues.filter((i) => i.kind === kind).map((i) => `${f.name} ${i.row}行目「${i.value}」`));
+      if (list.length) item(false, `読めない${label === "勘定科目が空欄" ? "行（勘定科目が空欄）" : label}が ${list.length} 行あります。この行は集計に入りません。`, list.slice(0, 10).join(" ／ ") + (list.length > 10 ? " ほか" : ""));
+      else item(true, `${label === "勘定科目が空欄" ? "勘定科目の空欄" : `読めない${label}`}はありません。`);
+    }
+    const periods = [...new Set(allEntries().map((e) => periodEnd(e.date, closingMonth)))].sort();
+    if (periods.length) item(true, `対象の期：${periods.map(periodLabel).join("、")}`);
+    const unmapped = findUnmapped(allEntries(), currentMap());
+    item(unmapped.length === 0, unmapped.length === 0 ? "すべての科目の区分が決まっています。" : `区分の決まっていない科目が ${unmapped.length} 個あります（下の表で選んでください）。`);
+  }
+
+  function renderAccounts() {
+    const table = $("accounts");
+    table.replaceChildren();
+    const map = currentMap();
+    const stat = new Map<string, number>();
+    for (const e of allEntries()) {
+      stat.set(e.debit, (stat.get(e.debit) ?? 0) + 1);
+      stat.set(e.credit, (stat.get(e.credit) ?? 0) + 1);
+    }
+    const order = (a: string) => {
+      const r = lookupAccount(a, map);
+      return !r ? 0 : r.check ? 1 : isPl(r.kubun) ? 2 + PL_KUBUN.indexOf(r.kubun as never) : 20;
+    };
+    const names = [...stat.keys()].sort((a, b) => order(a) - order(b) || a.localeCompare(b, "ja"));
+    table.append(el("tr", {}, el("th", {}, "勘定科目"), el("th", {}, "区分"), el("th", { class: "num" }, "使われた行数"), el("th", {}, "")));
+    for (const name of names) {
+      const r = lookupAccount(name, map);
+      const sel = el("select");
+      if (!r) sel.append(el("option", { value: "" }, "（選んでください）"));
+      for (const k of PL_KUBUN) sel.append(el("option", { value: k }, k));
+      sel.append(el("option", { value: NOT_PL }, "PL に関係しない（資産・負債・純資産・諸口など）"));
+      sel.value = !r ? "" : isPl(r.kubun) ? r.kubun : NOT_PL;
+      sel.addEventListener("change", () => {
+        const std = STANDARD_ACCOUNTS[name];
+        // PL 以外を選んだときは、標準の BS の区分があればそれを残す（v2 の BS で使う）
+        const kubun: Kubun = sel.value === NOT_PL ? (std && !isPl(std.kubun) ? std.kubun : "対象外") : (sel.value as Kubun);
+        userMap[name] = { kubun };
+        renderStep2();
+      });
+      const tag = !r ? el("span", { class: "tag-err" }, "未選択") : r.check && !userMap[name] ? el("span", { class: "tag-warn" }, "要確認") : "";
+      table.append(el("tr", { class: !r ? "unmapped" : r.check && !userMap[name] ? "check" : "" }, el("td", {}, name), el("td", {}, sel), el("td", { class: "num" }, String(stat.get(name))), el("td", {}, tag)));
+    }
+  }
+
+  $("export-map").addEventListener("click", () => {
+    const used = new Set(allEntries().flatMap((e) => [e.debit, e.credit]));
+    const map = currentMap();
+    const out: AccountMap = {};
+    for (const name of [...used].sort()) {
+      const r = lookupAccount(name, map);
+      if (r) out[name] = { kubun: r.kubun };
+    }
+    download("勘定科目の区分.json", JSON.stringify({ tool: "kanaeru-tools/shiwake-kessan", version: 1, accounts: out }, null, 2), "application/json");
+  });
+  $<HTMLInputElement>("import-map").addEventListener("change", async (e) => {
+    const input = e.target as HTMLInputElement;
+    const f = input.files?.[0];
+    input.value = "";
+    if (!f) return;
+    try {
+      const json = JSON.parse(await f.text());
+      const accounts = json.accounts ?? json;
+      for (const [name, rule] of Object.entries(accounts as Record<string, { kubun: Kubun }>)) {
+        if (rule && typeof rule.kubun === "string") userMap[name] = { kubun: rule.kubun };
+      }
+      renderStep2();
+    } catch {
+      alert("区分の設定ファイルを読み込めませんでした。このツールで保存した JSON ファイルを選んでください。");
+    }
+  });
+
+  function updateRunButton() {
+    const unmapped = findUnmapped(allEntries(), currentMap());
+    const agreed = $<HTMLInputElement>("agree").checked;
+    const hasEntries = allEntries().length > 0;
+    const reason = !hasEntries ? "読み込めた仕訳がありません。" : unmapped.length ? "区分の決まっていない科目があります。" : !agreed ? "利用規約と注意事項への同意にチェックを入れてください。" : "";
+    $("run-hint").textContent = reason;
+    $<HTMLButtonElement>("run").disabled = reason !== "";
+  }
+  $("agree").addEventListener("change", updateRunButton);
+
+  // ---------- ③ 結果 ----------
+  $("run").addEventListener("click", () => {
+    results = buildPl(allEntries(), currentMap(), closingMonth);
+    renderPl();
+    const sel = $<HTMLSelectElement>("period");
+    sel.replaceChildren(...results.map((p) => el("option", { value: p.period }, periodLabel(p.period))));
+    sel.value = results.at(-1)?.period ?? "";
+    renderCharts();
+    $("step3").hidden = false;
+    $("step3").scrollIntoView({ behavior: "smooth" });
+  });
+  $("period").addEventListener("change", renderCharts);
+
+  type PlRow = { label: string; kind: "head" | "item" | "sub" | "total"; values: number[] };
+  function plRows(): PlRow[] {
+    const rows: PlRow[] = [];
+    const kubunBlock = (k: (typeof PL_KUBUN)[number], withItems: boolean) => {
+      rows.push({ label: k, kind: "head", values: results.map((p) => p.total[k]) });
+      const accounts = [...new Set(results.flatMap((p) => p.detail[k].map((l) => l.account)))];
+      // 科目が区分と同じ名前の1つだけ（売上高など）なら、内訳は出さない
+      if (!withItems || (accounts.length === 1 && accounts[0] === k)) return;
+      for (const a of accounts) rows.push({ label: a, kind: "item", values: results.map((p) => p.detail[k].find((l) => l.account === a)?.amount ?? 0) });
+    };
+    const sub = (label: string, f: (p: PlStatement) => number, kind: PlRow["kind"] = "sub") => rows.push({ label, kind, values: results.map(f) });
+    kubunBlock("売上高", true);
+    kubunBlock("売上原価", true);
+    sub("売上総利益", (p) => p.売上総利益);
+    kubunBlock("販売費及び一般管理費", true);
+    sub("営業利益", (p) => p.営業利益);
+    kubunBlock("営業外収益", true);
+    kubunBlock("営業外費用", true);
+    sub("経常利益", (p) => p.経常利益);
+    kubunBlock("特別利益", true);
+    kubunBlock("特別損失", true);
+    sub("税引前当期純利益", (p) => p.税引前当期純利益);
+    kubunBlock("法人税等", false);
+    sub("当期純利益", (p) => p.当期純利益, "total");
+    // 金額がすべて0の区分（売上原価がない会社など）は見出しごと省く
+    return rows.filter((r) => r.kind === "sub" || r.kind === "total" || r.values.some((v) => v !== 0));
+  }
+
+  function renderPl() {
+    const table = $("pl");
+    table.replaceChildren(el("tr", {}, el("th", {}, "（単位：円）"), ...results.map((p) => el("th", { class: "num" }, periodLabel(p.period)))));
+    for (const r of plRows()) table.append(el("tr", { class: r.kind }, el("td", {}, r.label), ...r.values.map((v) => el("td", { class: "num" }, yen(v)))));
+  }
+
+  function renderCharts() {
+    charts.splice(0).forEach((c) => c.destroy());
+    const period = $<HTMLSelectElement>("period").value;
+    const pl = results.find((p) => p.period === period);
+    if (!pl) return;
+    const m = monthly(allEntries(), currentMap(), closingMonth, period);
+    const fmt = (v: number | string) => yen(Number(v));
+    charts.push(new Chart($<HTMLCanvasElement>("c-monthly"), {
+      data: {
+        labels: m.map((r) => `${Number(r.month.slice(5))}月`),
+        datasets: [
+          { type: "bar", label: "売上高", data: m.map((r) => r.売上高), backgroundColor: "#60a5fa", order: 2 },
+          { type: "bar", label: "費用合計", data: m.map((r) => r.費用合計), backgroundColor: "#fca5a5", order: 2 },
+          { type: "line", label: "当期純利益", data: m.map((r) => r.当期純利益), borderColor: "#1e3a8a", backgroundColor: "#1e3a8a", order: 1 },
+        ],
+      },
+      options: { scales: { y: { ticks: { callback: fmt } } }, plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}：${yen(c.parsed.y ?? 0)}円` } } } },
+    }));
+    const b = expenseBreakdown(pl);
+    charts.push(new Chart($<HTMLCanvasElement>("c-breakdown"), {
+      type: "bar",
+      data: { labels: b.map((r) => r.account), datasets: [{ label: "金額", data: b.map((r) => r.amount), backgroundColor: "#f97316" }] },
+      options: { indexAxis: "y", scales: { x: { ticks: { callback: fmt } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${yen(c.parsed.x ?? 0)}円` } } } },
+    }));
+    $("trend-card").hidden = results.length < 2;
+    if (results.length >= 2) {
+      charts.push(new Chart($<HTMLCanvasElement>("c-trend"), {
+        data: {
+          labels: results.map((p) => periodLabel(p.period)),
+          datasets: [
+            { type: "bar", label: "売上高", data: results.map((p) => p.total.売上高), backgroundColor: "#60a5fa", order: 2 },
+            { type: "line", label: "当期純利益", data: results.map((p) => p.当期純利益), borderColor: "#1e3a8a", backgroundColor: "#1e3a8a", order: 1 },
+          ],
+        },
+        options: { scales: { y: { ticks: { callback: fmt } } } },
+      }));
+    }
+  }
+
+  function download(name: string, text: string, type: string) {
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = el("a", { href: url, download: name });
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  $("download").addEventListener("click", () => {
+    const q = (s: string) => `"${s.replace(/"/g, '""')}"`;
+    const lines = [
+      q("かなえるTools で作成した参考資料です。正確さは保証しません。"),
+      ["項目", ...results.map((p) => periodLabel(p.period))].map(q).join(","),
+      ...plRows().map((r) => [q(r.label), ...r.values.map((v) => String(Math.round(v)))].join(",")),
+    ];
+    download("損益計算書.csv", "﻿" + lines.join("\r\n") + "\r\n", "text/csv");
+  });
+  $("print").addEventListener("click", () => window.print());
+</script>

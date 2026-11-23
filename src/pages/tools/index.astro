@@ -2,41 +2,19 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="暗号資産CSV圧縮ツール">
-  <h1>暗号資産CSV圧縮ツール</h1>
+<BaseLayout title="ツール一覧｜かなえるTools" description="かなえるToolsで公開している無料ツールの一覧です。">
+  <h1>ツール一覧</h1>
 
-  <p>
-    取引所の取引履歴CSVをアップロードすると、  
-    クリプタクトに取り込める形式へ圧縮・変換します。
-  </p>
-
-  <ul>
-    <li>bitFlyer / bitbank / Coincheck 対応</li>
-    <li>複数CSV同時アップロード対応</li>
-    <li>RUN圧縮で課金ランクを抑制</li>
-  </ul>
-
-  <p>
-    <a
-      href="https://crypto-standard.shinyapps.io/crypto_trade_standardizer/"
-      target="_blank"
-      class="launch-btn"
-    >
-      👉 ツールを起動する
+  <div class="card-grid">
+    <a class="card" href="/tools/shiwake-kessan/">
+      <h3>仕訳帳から損益計算書</h3>
+      <p>仕訳帳のファイルを置くだけで、損益計算書と月別のグラフが見られます。帳簿のデータはサーバーに送りません。</p>
+      <span class="btn-primary">損益計算書を見てみる</span>
     </a>
-  </p>
+    <a class="card" href="/tools/crypto-run/">
+      <h3>仮想通貨CSV圧縮ツール</h3>
+      <p>取引所の取引履歴CSVを軽量化し、損益計算ツールに取り込みやすい形式へ変換します。</p>
+      <span class="btn-primary">CSV圧縮ツールを使う</span>
+    </a>
+  </div>
 </BaseLayout>
-
-<style>
-.launch-btn {
-  display: inline-block;
-  background: #2563eb;
-  color: white;
-  padding: 0.8rem 1.2rem;
-  border-radius: 8px;
-  text-decoration: none;
-}
-.launch-btn:hover {
-  background: #1d4ed8;
-}
-</style>
