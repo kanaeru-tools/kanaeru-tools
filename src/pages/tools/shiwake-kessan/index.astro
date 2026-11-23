@@ -1,23 +1,29 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 
-const title = "仕訳帳から損益計算書｜かなえるTools";
+const title = "【無料】仕訳帳から損益計算書｜かなえるTools";
+// 検索結果に出る説明文。「無料」を先頭に置く
 const description =
-  "スプレッドシートでつけている仕訳帳（CSV・TSV）を置くだけで、損益計算書と月別のグラフをブラウザの中で作る無料ツールです。帳簿のデータはサーバーに送りません。";
+  "無料・登録不要で何度でも使えます。帳簿（仕訳帳）の CSV・TSV を置くだけで、損益計算書と月別のグラフをブラウザの中で作ります。帳簿のデータはサーバーに送りません。";
 ---
 
 <BaseLayout title={title} description={description} ogImage="/ogp/shiwake-kessan.jpg">
   <section class="sk">
     <div class="hero no-print">
-      <h1>仕訳帳を置くだけで、<br />損益計算書とグラフが見られる</h1>
-      <p>スプレッドシートでつけている帳簿（仕訳帳）を、会社の成績表の形にして確かめられます。</p>
+      <p class="badges">
+        <span class="badge badge-free">完全無料</span>
+        <span class="badge">登録不要</span>
+        <span class="badge">データは送信しません</span>
+      </p>
+      <h1>帳簿・仕訳帳を置くだけで、<br />損益計算書とグラフが見られる</h1>
+      <p>スプレッドシートでつけている帳簿（仕訳帳）を、会社の成績表の形にして確かめられます。<br />無料なので、月次のチェックや決算前の確認に、何度でもお使いください。</p>
     </div>
 
     <!-- ① 読み込み -->
     <label id="drop" class="drop no-print" for="file">
       <input id="file" type="file" accept=".csv,.tsv,.txt" multiple hidden />
       <span class="drop-icon" aria-hidden="true">📄</span>
-      <strong>ここに仕訳帳のファイルをドロップ</strong>
+      <strong>ここに帳簿（仕訳帳）のファイルをドロップ</strong>
       <span>またはクリックしてファイルを選ぶ（CSV・TSV、複数の期をまとめて入れられます）</span>
     </label>
     <p class="center no-print">
@@ -140,6 +146,10 @@ const description =
   .sk { max-width: 960px; margin: 0 auto; }
   .sk .hero { text-align: center; padding: 24px 8px 8px; }
   .sk .hero h1 { font-size: 1.7rem; line-height: 1.5; margin-bottom: 8px; }
+  @media (max-width: 600px) { .sk .hero h1 { font-size: 1.3rem; } }
+  .sk .badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 12px; }
+  .sk .badge { padding: 4px 12px; border-radius: 999px; background: #e0f2fe; color: #075985; font-size: 0.9rem; font-weight: bold; }
+  .sk .badge-free { background: #f59e0b; color: #fff; font-size: 1rem; }
   .sk .drop {
     display: flex; flex-direction: column; align-items: center; gap: 8px;
     margin: 24px 0 12px; padding: 56px 20px; border: 3px dashed #2563eb; border-radius: 18px;
