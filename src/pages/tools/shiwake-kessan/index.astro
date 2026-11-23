@@ -68,7 +68,7 @@ const description =
       <div class="card consent">
         <h3>結果を出す前に</h3>
         <ul class="notice">
-          <li>このツールの結果は、帳簿を確かめるための<strong>参考の下書き</strong>です。正確さや完全さは保証しません。</li>
+          <li>このツールの結果は、帳簿を確かめるための<strong>参考の下書き</strong>です。正確さや完全さを保証するものではありません。</li>
           <li>決算書・申告書の作成や税務調査への対応など、結果の使い方はご自身の責任で判断し、必要に応じて税理士などの専門家にご確認ください。</li>
           <li>集計は、上で確認・選択した科目の区分に基づきます。</li>
         </ul>
@@ -81,7 +81,7 @@ const description =
     <!-- ③ 結果 -->
     <div id="step3" hidden>
       <h2>損益計算書</h2>
-      <p class="notice-bar">かなえるTools で作成した参考資料です。正確さは保証しません。</p>
+      <p class="notice-bar">かなえるTools で作成した参考資料です。正確さを保証するものではありません。</p>
       <div class="table-wrap"><table id="pl" class="tbl pl"></table></div>
       <p class="actions no-print">
         <button id="download" type="button" class="btn-ghost">CSV で保存</button>
@@ -116,6 +116,8 @@ const description =
   .sk .drop-icon { font-size: 2.6rem; }
   .sk .center { text-align: center; }
   .sk .note { font-size: 0.88rem; color: #555; }
+  /* .card の display より、hidden 属性（1期だけのときの推移グラフなど）を優先する */
+  .sk [hidden] { display: none !important; }
   .sk .card { display: block; background: #fff; padding: 20px 24px; margin: 20px 0; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
   .sk .card h3 { margin-top: 0; font-size: 1.05rem; }
   .sk summary { cursor: pointer; font-weight: bold; }
@@ -485,7 +487,7 @@ const description =
   $("download").addEventListener("click", () => {
     const q = (s: string) => `"${s.replace(/"/g, '""')}"`;
     const lines = [
-      q("かなえるTools で作成した参考資料です。正確さは保証しません。"),
+      q("かなえるTools で作成した参考資料です。正確さを保証するものではありません。"),
       ["項目", ...results.map((p) => periodLabel(p.period))].map(q).join(","),
       ...plRows().map((r) => [q(r.label), ...r.values.map((v) => String(Math.round(v)))].join(",")),
     ];
