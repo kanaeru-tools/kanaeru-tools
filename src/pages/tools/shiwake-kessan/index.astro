@@ -240,6 +240,8 @@ const description =
   .sk .checks li.ok::marker { content: "✓ "; color: #16a34a; }
   .sk .checks li.ng::marker { content: "！ "; color: #dc2626; }
   .sk .checks li.ng { color: #b91c1c; }
+  .sk .checks li.warn::marker { content: "！ "; color: #d97706; }
+  .sk .checks li.warn { color: #92400e; }
   .sk .consent { border: 2px solid #f59e0b; }
   .sk .notice { padding-left: 1.2em; }
   .sk .agree { display: block; margin: 12px 0; font-weight: bold; }
@@ -259,7 +261,7 @@ const description =
   import { Chart, registerables } from "chart.js";
   import { decodeBytes, parseTable, detectHeaderRow, guessColumns, toEntries, parseAmount, type ColumnMap, type Entry, type ParseIssue } from "../../../lib/shiwake-kessan/parse";
   import { STANDARD_ACCOUNTS, PL_KUBUN, BS_KUBUN, isPl, lookupAccount, type AccountMap, type Kubun } from "../../../lib/shiwake-kessan/accounts";
-  import { buildPl, findUnmapped, isClosingEntry, periodEnd, type PlStatement } from "../../../lib/shiwake-kessan/aggregate";
+  import { buildPl, findUnmapped, guessClosingMonth, periodEnd, type ClosingSource, type PlStatement } from "../../../lib/shiwake-kessan/aggregate";
   import { buildBs, bsAccounts, hasOpeningEntries, type BsStatement } from "../../../lib/shiwake-kessan/bs";
   import { monthly, expenseBreakdown } from "../../../lib/shiwake-kessan/charts";
 
@@ -280,6 +282,7 @@ const description =
   const files: LoadedFile[] = [];
   let userMap: AccountMap = {};
   let closingMonth = 3;
+  let closingSource: ClosingSource | "user" = "default";
   let results: PlStatement[] = [];
   let bsResults: BsStatement[] = [];
   let openingMode: OpeningMode = "change";
@@ -309,7 +312,7 @@ const description =
       reparse(f);
       files.push(f);
     }
-    guessClosingMonth();
+    updateClosingMonth();
     // 分からないときは、貸借対照表と誤解されない「増減だけ」にしておく
     if (!openingModeChosen) openingMode = hasOpeningEntries(allEntries()) ? "start" : "change";
     $("step2").hidden = false;
@@ -330,10 +333,10 @@ const description =
     f.issues = r.issues;
   }
 
-  // 決算振替の仕訳の月を決算月とみなす。なければ3月
-  function guessClosingMonth() {
-    const closing = allEntries().find(isClosingEntry);
-    if (closing) closingMonth = Number(closing.date.slice(5, 7));
+  // 利用者が決算月を選んだら、ファイルを足しても推定し直さない
+  function updateClosingMonth() {
+    if (closingSource === "user") return;
+    ({ month: closingMonth, source: closingSource } = guessClosingMonth(allEntries()));
   }
 
   const drop = $("drop");
@@ -358,6 +361,7 @@ const description =
     files.length = 0;
     userMap = {};
     opening = {};
+    closingSource = "default";
     // サンプルは設立1期目からの仕訳
     openingMode = "start";
     openingModeChosen = true;
@@ -411,14 +415,15 @@ const description =
 
   $<HTMLSelectElement>("closing").addEventListener("change", (e) => {
     closingMonth = Number((e.target as HTMLSelectElement).value);
+    closingSource = "user";
     renderChecks();
   });
 
   function renderChecks() {
     const ul = $("checks");
     ul.replaceChildren();
-    const item = (ok: boolean, text: string, detail?: string) => {
-      const li = el("li", { class: ok ? "ok" : "ng" }, text);
+    const item = (ok: boolean | "warn", text: string, detail?: string) => {
+      const li = el("li", { class: ok === "warn" ? "warn" : ok ? "ok" : "ng" }, text);
       if (detail) li.append(el("div", { class: "note" }, detail));
       ul.append(li);
     };
@@ -430,6 +435,7 @@ const description =
       else item(true, `${label === "勘定科目が空欄" ? "勘定科目の空欄" : `読めない${label}`}はありません。`);
     }
     const periods = [...new Set(allEntries().map((e) => periodEnd(e.date, closingMonth)))].sort();
+    if (periods.length && closingSource === "default") item("warn", `決算月が帳簿から分からなかったので、${closingMonth}月にしています。`, "上の「決算月」が合っているか確かめてください。");
     if (periods.length) item(true, `対象の期：${periods.map(periodLabel).join("、")}`);
     const unmapped = findUnmapped(allEntries(), currentMap());
     item(unmapped.length === 0, unmapped.length === 0 ? "すべての科目の区分が決まっています。" : `区分の決まっていない科目が ${unmapped.length} 個あります（下の表で選んでください）。`);

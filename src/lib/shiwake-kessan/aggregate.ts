@@ -23,6 +23,24 @@ export function isClosingEntry(e: Entry): boolean {
   return CLOSING_ACCOUNTS.has(normalizeAccount(e.debit)) || CLOSING_ACCOUNTS.has(normalizeAccount(e.credit));
 }
 
+// 決算月の推定。決算振替 → 減価償却費（期末にまとめて計上されることが多い）→ ちょうど12か月の倍数のデータなら最初の月の前月、の順に見る
+export type ClosingSource = "closing" | "depreciation" | "span" | "default";
+export function guessClosingMonth(entries: Entry[]): { month: number; source: ClosingSource } {
+  const monthOf = (e: Entry) => Number(e.date.slice(5, 7));
+  const closing = entries.find(isClosingEntry);
+  if (closing) return { month: monthOf(closing), source: "closing" };
+  // 毎月償却している帳簿は月がばらけるので、1つの月にそろっているときだけ使う
+  const dep = new Set(entries.filter((e) => [e.debit, e.credit].some((a) => normalizeAccount(a) === "減価償却費")).map(monthOf));
+  if (dep.size === 1) return { month: [...dep][0], source: "depreciation" };
+  if (entries.length) {
+    const ym = (d: string) => Number(d.slice(0, 4)) * 12 + Number(d.slice(5, 7)) - 1;
+    const dates = entries.map((e) => e.date).sort();
+    const span = ym(dates.at(-1)!) - ym(dates[0]) + 1;
+    if (span % 12 === 0) return { month: ((Number(dates[0].slice(5, 7)) + 10) % 12) + 1, source: "span" };
+  }
+  return { month: 3, source: "default" };
+}
+
 // 1行1仕訳を、借方・貸方の2行に分ける。決算振替の仕訳は外す
 export function toPostings(entries: Entry[], closingMonth: number): Posting[] {
   return entries.filter((e) => !isClosingEntry(e)).flatMap((e) => {

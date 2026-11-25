@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { expenseBreakdown, monthly } from "./charts";
 import { decodeBytes, parseAmount, parseDate, parseLedger } from "./parse";
 import { STANDARD_ACCOUNTS } from "./accounts";
-import { buildPl, findUnmapped, periodEnd } from "./aggregate";
+import { buildPl, findUnmapped, guessClosingMonth, periodEnd } from "./aggregate";
 import { bsAccounts, buildBs, hasOpeningEntries } from "./bs";
 
 // 架空の会社（3月決算）。1行目はタイトル、2行目がヘッダー
@@ -99,6 +99,17 @@ describe("集計", () => {
     expect(periodEnd("2025-09-30", 9)).toBe("2025-09");
     expect(periodEnd("2025-10-01", 9)).toBe("2026-09");
     expect(periodEnd("2026-03-31", 12)).toBe("2026-12");
+  });
+
+  it("決算月を推定する：決算振替 → 減価償却費の月 → 12か月分なら最初の月の前月 → 3月", () => {
+    const g = (text: string) => guessClosingMonth(parseLedger("日付,借方,貸方,金額\n" + text).entries);
+    expect(guessClosingMonth(parseLedger(SAMPLE).entries)).toEqual({ month: 3, source: "closing" });
+    expect(g("2025/10/05,現金,売上高,1\n2026/09/30,減価償却費,建物,1\n2025/09/30,減価償却費,建物,1"))
+      .toEqual({ month: 9, source: "depreciation" });
+    // 毎月償却していると月がばらけるので使わず、期間で決める
+    expect(g("2025/10/05,減価償却費,建物,1\n2026/09/30,減価償却費,建物,1")).toEqual({ month: 9, source: "span" });
+    expect(g("2026/01/05,現金,売上高,1\n2026/12/20,現金,売上高,1")).toEqual({ month: 12, source: "span" });
+    expect(g("2026/04/05,現金,売上高,1\n2026/11/20,現金,売上高,1")).toEqual({ month: 3, source: "default" });
   });
 
   it("対応表にない科目があれば集計しない", () => {
