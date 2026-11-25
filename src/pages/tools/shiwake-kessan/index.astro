@@ -24,8 +24,10 @@ const description =
     <label id="drop" class="drop no-print" for="file">
       <input id="file" type="file" accept=".csv,.tsv,.txt" multiple hidden />
       <span class="drop-icon" aria-hidden="true">📄</span>
-      <strong>ここに帳簿（仕訳帳）のファイルをドロップ</strong>
-      <span>またはクリックしてファイルを選ぶ（CSV・TSV、複数の期をまとめて入れられます）</span>
+      <strong class="pc-only">ここに帳簿（仕訳帳）のファイルをドロップ</strong>
+      <span class="pc-only">またはクリックしてファイルを選ぶ（CSV・TSV、複数の期をまとめて入れられます）</span>
+      <strong class="touch-only">タップして帳簿（仕訳帳）のファイルを選ぶ</strong>
+      <span class="touch-only">CSV・TSV。Google ドライブなどからも選べます（パソコンなら、ドラッグ＆ドロップで置けます）</span>
     </label>
     <p class="center no-print">
       <button id="sample" type="button" class="btn-ghost">架空のサンプルで試してみる</button>
@@ -203,6 +205,13 @@ const description =
   .sk .drop strong { font-size: 1.35rem; }
   .sk .drop.over, .sk .drop:hover { background: #dbeafe; }
   .sk .drop-icon { font-size: 2.6rem; }
+  /* 指で触る画面（スマホ・タブレット）では、ドロップではなくタップの案内にする */
+  .sk .touch-only { display: none; }
+  @media (pointer: coarse) {
+    .sk .pc-only { display: none; }
+    .sk .touch-only { display: inline; }
+    .sk .drop { padding: 36px 16px; }
+  }
   .sk .center { text-align: center; }
   .sk .note { font-size: 0.88rem; color: #555; }
   /* .card の display より、hidden 属性（1期だけのときの推移グラフなど）を優先する */
