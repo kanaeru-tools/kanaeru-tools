@@ -55,6 +55,30 @@ export function bsAccounts(entries: Entry[], map: AccountMap): { account: string
   );
 }
 
+// 入力された期首の残高を、BS の区分がある科目だけにし、繰越利益剰余金の書き方のゆれを1つにまとめる（BS に載せる向きのまま）
+export function openingByAccount(opening: Record<string, number>, map: AccountMap): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const [account, amount] of Object.entries(opening)) {
+    const isRetained = normalizeAccount(account) === RETAINED;
+    const kubun = lookupAccount(account, map)?.kubun ?? (isRetained ? "純資産" : undefined);
+    if (!kubun || !isBs(kubun) || !amount) continue;
+    const key = isRetained ? RETAINED : account;
+    out.set(key, (out.get(key) ?? 0) + amount);
+  }
+  return out;
+}
+
+// 期（期末の年月。決算月はすべて同じ）の並びで、間に抜けている期を返す
+export function missingPeriods(periods: string[]): string[] {
+  const years = periods.map((p) => Number(p.slice(0, 4))).sort((a, b) => a - b);
+  if (years.length === 0) return [];
+  const month = periods[0].slice(4);
+  const have = new Set(years);
+  const out: string[] = [];
+  for (let y = years[0]; y <= years.at(-1)!; y++) if (!have.has(y)) out.push(`${y}${month}`);
+  return out;
+}
+
 // opening は最初の期の期首の残高（BS に載せる向きの金額）。mode が change のときは使わない
 export function buildBs(
   entries: Entry[],
@@ -83,11 +107,9 @@ export function buildBs(
   const balance = new Map<string, number>();
   const retainedKey = (name: string) => (normalizeAccount(name) === RETAINED ? RETAINED : name);
   if (mode === "balance") {
-    for (const [account, amount] of Object.entries(opening)) {
-      const kubun = lookupAccount(account, map)?.kubun ?? (normalizeAccount(account) === RETAINED ? "純資産" : undefined);
-      if (!kubun || !isBs(kubun) || !amount) continue;
-      const key = retainedKey(account);
-      balance.set(key, (balance.get(key) ?? 0) + (ASSET.has(kubun) ? amount : -amount));
+    for (const [key, amount] of openingByAccount(opening, map)) {
+      const kubun = key === RETAINED ? "純資産" : lookupAccount(key, map)!.kubun;
+      balance.set(key, ASSET.has(kubun as BsKubun) ? amount : -amount);
     }
   }
 

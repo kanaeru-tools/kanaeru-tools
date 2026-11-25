@@ -83,9 +83,9 @@ const description =
 
       <div class="card">
         <h3>期首の残高（貸借対照表に使います）</h3>
-        <p class="note">貸借対照表は「期首の残高 ＋ 期間中の増減」で作ります。読み込んだデータに合うものを選んでください。</p>
+        <p class="note">貸借対照表は「期首の残高 ＋ 期間中の増減」を、最初の期から足し上げて作ります。読み込んだデータに合うものを選んでください。</p>
         <div class="choices">
-          <label><input type="radio" name="opening-mode" value="start" /> 設立1期目から入っている、または期首の残高の仕訳（前期繰越・開始仕訳）も入っている</label>
+          <label><input type="radio" name="opening-mode" value="start" /> 設立1期目から入っている、または期首の残高の仕訳（前期繰越・開始仕訳）も入っている（ふつうはこれ）</label>
           <label><input type="radio" name="opening-mode" value="input" /> 途中の期から入っている。前期末の残高を入力する</label>
           <label><input type="radio" name="opening-mode" value="change" /> 途中の期から入っている。期間中の増減だけを見る（貸借対照表は出しません）</label>
         </div>
@@ -120,6 +120,7 @@ const description =
       <p id="bs-premise" class="premise"></p>
       <ul id="bs-notes" class="bs-notes"></ul>
       <div class="table-wrap"><table id="bs" class="tbl pl"></table></div>
+      <p id="bs-check" class="bs-check"></p>
       <p class="actions no-print">
         <button id="download" type="button" class="btn-ghost">CSV で保存（損益計算書・貸借対照表）</button>
         <button id="print" type="button" class="btn-ghost">印刷・PDF で保存</button>
@@ -193,6 +194,11 @@ const description =
   .sk .premise { font-weight: bold; color: #1e3a8a; }
   .sk .bs-notes { padding-left: 1.2em; color: #92400e; }
   .sk .bs-notes li { margin: 4px 0; }
+  .sk .bs-check { color: #15803d; font-weight: bold; }
+  .sk .bs-check.ng { color: #b91c1c; }
+  .sk .pl .tog { border: 0; background: none; cursor: pointer; padding: 0 .4em 0 0; margin-left: -1.4em; width: 1.4em; color: #2563eb; font-size: .8em; }
+  .sk .pl tr.move td { font-size: .9em; color: #6b7280; background: #f9fafb; }
+  .sk .pl tr.move td:first-child { padding-left: 3.5em; }
   @media (max-width: 600px) { .sk .hero h1 { font-size: 1.3rem; } }
   .sk .badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 12px; }
   .sk .badge { padding: 4px 12px; border-radius: 999px; background: #e0f2fe; color: #075985; font-size: 0.9rem; font-weight: bold; }
@@ -262,7 +268,7 @@ const description =
   import { decodeBytes, parseTable, detectHeaderRow, guessColumns, toEntries, parseAmount, type ColumnMap, type Entry, type ParseIssue } from "../../../lib/shiwake-kessan/parse";
   import { STANDARD_ACCOUNTS, PL_KUBUN, BS_KUBUN, isPl, lookupAccount, type AccountMap, type Kubun } from "../../../lib/shiwake-kessan/accounts";
   import { buildPl, findUnmapped, guessClosingMonth, periodEnd, type ClosingSource, type PlStatement } from "../../../lib/shiwake-kessan/aggregate";
-  import { buildBs, bsAccounts, hasOpeningEntries, type BsStatement } from "../../../lib/shiwake-kessan/bs";
+  import { buildBs, bsAccounts, hasOpeningEntries, missingPeriods, openingByAccount, type BsStatement } from "../../../lib/shiwake-kessan/bs";
   import { monthly, expenseBreakdown } from "../../../lib/shiwake-kessan/charts";
 
   Chart.register(...registerables);
@@ -285,7 +291,8 @@ const description =
   let closingSource: ClosingSource | "user" = "default";
   let results: PlStatement[] = [];
   let bsResults: BsStatement[] = [];
-  let openingMode: OpeningMode = "change";
+  let bsChanges: BsStatement[] = []; // 各期の増減（▶ で開く内訳）
+  let openingMode: OpeningMode = "start";
   let openingModeChosen = false; // 利用者が選んだら、ファイルを足しても自動で変えない
   let opening: Record<string, number> = {};
   let bsModeShown: OpeningMode = "change";
@@ -313,8 +320,8 @@ const description =
       files.push(f);
     }
     updateClosingMonth();
-    // 分からないときは、貸借対照表と誤解されない「増減だけ」にしておく
-    if (!openingModeChosen) openingMode = hasOpeningEntries(allEntries()) ? "start" : "change";
+    // ふつうは設立1期目から入れるので、期首0円から足し上げる。途中からの人は選び直す
+    if (!openingModeChosen) openingMode = "start";
     $("step2").hidden = false;
     $("step3").hidden = true;
     renderStep2();
@@ -579,6 +586,7 @@ const description =
     results = buildPl(allEntries(), currentMap(), closingMonth);
     bsModeShown = openingMode;
     bsResults = buildBs(allEntries(), currentMap(), closingMonth, openingMode === "change" ? "change" : "balance", openingMode === "input" ? opening : {});
+    bsChanges = buildBs(allEntries(), currentMap(), closingMonth, "change");
     renderPl();
     renderBs();
     const sel = $<HTMLSelectElement>("period");
@@ -590,7 +598,7 @@ const description =
   });
   $("period").addEventListener("change", renderCharts);
 
-  type PlRow = { label: string; kind: "head" | "item" | "sub" | "total"; values: number[] };
+  type PlRow = { label: string; kind: "head" | "item" | "sub" | "total"; values: number[]; kubun?: string };
   function plRows(): PlRow[] {
     const rows: PlRow[] = [];
     const kubunBlock = (k: (typeof PL_KUBUN)[number], withItems: boolean) => {
@@ -631,44 +639,85 @@ const description =
       ? "期首の残高が入っていないため、各期の中で増えた・減った金額だけを出しています。期末の残高ではないので、貸借対照表としては使えません。"
       : bsModeShown === "input"
         ? "期首の残高：入力した前期末の残高を使っています。"
-        : "期首の残高：0円とみなしています（設立1期目から、または前期繰越の仕訳が入っている前提）。";
+        : "期首の残高：最初の期の期首を0円とみなし、そこから各期の増減を足し上げています。設立1期目からのデータでないときは、上の「期首の残高」で前期末の残高を入力してください。";
 
+  // 増減表は期ごとの列。貸借対照表は最後の期の期末残高だけを1列で出す（期ごとの増減は ▶ で開く）
+  const bsShown = () => (bsModeShown === "change" ? bsResults : bsResults.slice(-1));
   function bsRows(): PlRow[] {
+    const shown = bsShown();
     const rows: PlRow[] = [];
     const block = (k: (typeof BS_KUBUN)[number]) => {
-      const values = bsResults.map((b) => b.total[k]);
-      if (values.every((v) => v === 0)) return;
+      const values = shown.map((b) => b.total[k]);
+      const accounts = [...new Set(shown.flatMap((b) => b.detail[k].map((l) => l.account)))];
+      if (accounts.length === 0) return;
       rows.push({ label: k, kind: "head", values });
-      const accounts = [...new Set(bsResults.flatMap((b) => b.detail[k].map((l) => l.account)))];
-      for (const a of accounts) rows.push({ label: a, kind: "item", values: bsResults.map((b) => b.detail[k].find((l) => l.account === a)?.amount ?? 0) });
+      for (const a of accounts) rows.push({ label: a, kind: "item", kubun: k, values: shown.map((b) => b.detail[k].find((l) => l.account === a)?.amount ?? 0) });
     };
     block("流動資産");
     block("固定資産");
     block("繰延資産");
-    rows.push({ label: "資産合計", kind: "sub", values: bsResults.map((b) => b.資産合計) });
+    rows.push({ label: "資産合計", kind: "sub", values: shown.map((b) => b.資産合計) });
     block("流動負債");
     block("固定負債");
-    rows.push({ label: "負債合計", kind: "sub", values: bsResults.map((b) => b.負債合計) });
+    rows.push({ label: "負債合計", kind: "sub", values: shown.map((b) => b.負債合計) });
     block("純資産");
-    rows.push({ label: "純資産合計", kind: "sub", values: bsResults.map((b) => b.純資産合計) });
-    rows.push({ label: "負債・純資産合計", kind: "total", values: bsResults.map((b) => b.負債純資産合計) });
+    rows.push({ label: "純資産合計", kind: "sub", values: shown.map((b) => b.純資産合計) });
+    rows.push({ label: "負債・純資産合計", kind: "total", values: shown.map((b) => b.負債純資産合計) });
     return rows;
   }
+
+  // ▶ で開く内訳：期首の残高（入力したときだけ）と各期の増減。足すと期末残高になる
+  function bsMoves(r: PlRow): { label: string; value: number }[] {
+    const k = r.kubun as (typeof BS_KUBUN)[number];
+    const out: { label: string; value: number }[] = [];
+    const open = bsModeShown === "input" ? openingByAccount(opening, currentMap()).get(r.label) ?? 0 : 0;
+    if (open) out.push({ label: "期首の残高（入力）", value: open });
+    for (const b of bsChanges) out.push({ label: `${periodLabel(b.period)}の増減`, value: b.detail[k].find((l) => l.account === r.label)?.amount ?? 0 });
+    return out;
+  }
+  const signed = (n: number) => (n > 0 ? "+" : "") + yen(n);
 
   function renderBs() {
     $("bs-title").textContent = bsTitle();
     $("bs-premise").textContent = bsPremise();
+    const balance = bsModeShown !== "change";
+    const last = bsResults.at(-1);
     // 推測（データが抜けている等）は書かず、見えた事実だけを並べる
     const notes = $("bs-notes");
     notes.replaceChildren();
-    for (const b of bsResults) {
-      if (b.negatives.length) notes.append(el("li", {}, `${periodLabel(b.period)}末にマイナスになっている科目：${b.negatives.map((l) => `${l.account} ${yen(l.amount)}円`).join("、")}`));
+    if (balance) {
+      const missing = missingPeriods(bsResults.map((b) => b.period));
+      if (missing.length) notes.append(el("li", {}, `${missing.map(periodLabel).join("、")}の仕訳がありません。間の期が抜けていると、期末の残高は正しくなりません。`));
+      if (last?.negatives.length) notes.append(el("li", {}, `期末にマイナスになっている科目：${last.negatives.map((l) => `${l.account} ${yen(l.amount)}円`).join("、")}`));
+    }
+    for (const b of bsShown()) {
       if (b.差額 !== 0) notes.append(el("li", {}, `${periodLabel(b.period)}：資産合計と負債・純資産合計が ${yen(Math.abs(b.差額))}円 ずれています。期首の残高の入力や、「決算書に載せない」にした科目（諸口など）に残った金額を確かめてください。`));
     }
-    const head = bsModeShown === "change" ? "（単位：円・期中の増減）" : "（単位：円・期末の残高）";
+    const head = balance ? "（単位：円）" : "（単位：円・期中の増減）";
     const table = $("bs");
-    table.replaceChildren(el("tr", {}, el("th", {}, head), ...bsResults.map((b) => el("th", { class: "num" }, periodLabel(b.period)))));
-    for (const r of bsRows()) table.append(el("tr", { class: r.kind }, el("td", {}, r.label), ...r.values.map((v) => el("td", { class: "num" }, yen(v)))));
+    table.replaceChildren(el("tr", {}, el("th", {}, head), ...bsShown().map((b) => el("th", { class: "num" }, balance ? `${periodLabel(b.period)}末の残高` : periodLabel(b.period)))));
+    for (const r of bsRows()) {
+      const label = el("td", {}, r.label);
+      const tr = el("tr", { class: r.kind }, label, ...r.values.map((v) => el("td", { class: "num" }, yen(v))));
+      table.append(tr);
+      if (!balance || r.kind !== "item") continue;
+      const sub = bsMoves(r).map((m) => el("tr", { class: "move", hidden: "" }, el("td", {}, m.label), el("td", { class: "num" }, signed(m.value))));
+      const tog = el("button", { type: "button", class: "tog no-print", "aria-expanded": "false", title: "期ごとの増減を開く" }, "▶");
+      tog.addEventListener("click", () => {
+        const open = tog.getAttribute("aria-expanded") !== "true";
+        tog.setAttribute("aria-expanded", String(open));
+        tog.textContent = open ? "▼" : "▶";
+        for (const s of sub) s.hidden = !open;
+      });
+      label.prepend(tog);
+      table.append(...sub);
+    }
+    // 資産＝負債＋純資産 の答え合わせ（最後の期）
+    const check = $("bs-check");
+    check.textContent = !balance || !last ? "" : last.差額 === 0
+      ? `✓ 資産合計 ${yen(last.資産合計)}円 ＝ 負債・純資産合計 ${yen(last.負債純資産合計)}円（一致しています）`
+      : `！ 資産合計 ${yen(last.資産合計)}円 と 負債・純資産合計 ${yen(last.負債純資産合計)}円 が一致していません（上の注意を見てください）`;
+    check.className = "bs-check" + (last && last.差額 !== 0 ? " ng" : "");
   }
 
   function renderCharts() {
@@ -717,6 +766,27 @@ const description =
     URL.revokeObjectURL(url);
   }
 
+  // 貸借対照表は、画面で閉じている期ごとの増減も科目の行に並べる（期首の残高＋増減＝期末の残高 を検算できるように）
+  function bsCsv(q: (s: string) => string): string[] {
+    const shown = bsShown();
+    if (bsModeShown === "change") {
+      return [["項目", ...shown.map((b) => periodLabel(b.period))].map(q).join(","), ...bsRows().map((r) => [q(r.label), ...r.values.map((v) => String(Math.round(v)))].join(","))];
+    }
+    const withOpening = bsModeShown === "input";
+    const open = openingByAccount(opening, currentMap());
+    const header = ["項目", `${periodLabel(shown[0].period)}末の残高`, ...(withOpening ? ["期首の残高（入力）"] : []), ...bsChanges.map((b) => `${periodLabel(b.period)}の増減`)];
+    return [
+      header.map(q).join(","),
+      ...bsRows().map((r) => {
+        const moves = r.kind !== "item" ? [] : [
+          ...(withOpening ? [open.get(r.label) ?? 0] : []),
+          ...bsChanges.map((b) => b.detail[r.kubun as (typeof BS_KUBUN)[number]].find((l) => l.account === r.label)?.amount ?? 0),
+        ];
+        return [q(r.label), String(Math.round(r.values[0])), ...moves.map((v) => String(Math.round(v)))].join(",");
+      }),
+    ];
+  }
+
   $("download").addEventListener("click", () => {
     const q = (s: string) => `"${s.replace(/"/g, '""')}"`;
     const table = (rows: PlRow[]) => rows.map((r) => [q(r.label), ...r.values.map((v) => String(Math.round(v)))].join(","));
@@ -729,8 +799,7 @@ const description =
       "",
       q(bsTitle()),
       q(bsPremise()),
-      ["項目", ...bsResults.map((b) => periodLabel(b.period))].map(q).join(","),
-      ...table(bsRows()),
+      ...bsCsv(q),
     ];
     download("決算書.csv", "﻿" + lines.join("\r\n") + "\r\n", "text/csv");
   });

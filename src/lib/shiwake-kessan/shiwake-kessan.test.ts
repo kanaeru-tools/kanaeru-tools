@@ -2,9 +2,9 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { expenseBreakdown, monthly } from "./charts";
 import { decodeBytes, parseAmount, parseDate, parseLedger } from "./parse";
-import { STANDARD_ACCOUNTS } from "./accounts";
+import { BS_KUBUN, STANDARD_ACCOUNTS } from "./accounts";
 import { buildPl, findUnmapped, guessClosingMonth, periodEnd } from "./aggregate";
-import { bsAccounts, buildBs, hasOpeningEntries } from "./bs";
+import { bsAccounts, buildBs, hasOpeningEntries, missingPeriods, openingByAccount } from "./bs";
 
 // 架空の会社（3月決算）。1行目はタイトル、2行目がヘッダー
 const SAMPLE = [
@@ -161,6 +161,26 @@ describe("集計", () => {
     // 入力欄には、データにない繰越利益剰余金も出す
     expect(bsAccounts(parseLedger("日付,借方,貸方,金額\n2026/01/01,現金,売上高,1").entries, STANDARD_ACCOUNTS))
       .toEqual([{ account: "現金", kubun: "流動資産" }, { account: "繰越利益剰余金", kubun: "純資産" }]);
+  });
+
+  it("期首の残高＋各期の増減＝最後の期の期末残高（▶ で開く内訳）", () => {
+    const { entries } = parseLedger(SAMPLE);
+    const opening = { 普通預金: 100000, 資本金: 100000 };
+    const last = buildBs(entries, STANDARD_ACCOUNTS, 3, "balance", opening).at(-1)!;
+    const changes = buildBs(entries, STANDARD_ACCOUNTS, 3, "change");
+    const open = openingByAccount(opening, STANDARD_ACCOUNTS);
+    for (const k of BS_KUBUN) {
+      for (const { account, amount } of last.detail[k]) {
+        const moves = changes.reduce((s, b) => s + (b.detail[k].find((l) => l.account === account)?.amount ?? 0), 0);
+        expect((open.get(account) ?? 0) + moves).toBe(amount);
+      }
+    }
+  });
+
+  it("間に抜けている期を見つける", () => {
+    expect(missingPeriods(["2024-09", "2026-09", "2025-09"])).toEqual([]);
+    expect(missingPeriods(["2023-03", "2026-03"])).toEqual(["2024-03", "2025-03"]);
+    expect(missingPeriods([])).toEqual([]);
   });
 
   it("前期繰越の仕訳を見つける", () => {
