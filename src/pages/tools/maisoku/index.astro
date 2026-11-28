@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { fieldGroups, photoSlots } from "../../../lib/maisoku/fields";
+import "../../../styles/maisoku.css";
+
+const pairs = [
+  [{ label: "間取り", id: "layout" }, { label: "築年", id: "builtYear" }],
+  [{ label: "建物・専有面積", id: "buildingArea" }, { label: "土地面積", id: "landArea" }],
+  [{ label: "構造", id: "structure" }, { label: "階数", id: "floors" }],
+  [{ label: "駐車場", id: "parking" }, { label: "入居時期", id: "availability" }],
+];
+---
+
+<BaseLayout title="マイソク作成｜無料・登録不要｜かなえるTools" description="物件情報を入力し、写真・間取りを選ぶだけ。A4横の賃貸マイソクを無料で作成し、印刷・PDF保存できます。データはサーバーに送りません。" ogImage="/ogp/site.jpg">
+  <div class="maisoku-tool">
+    <header class="maisoku-intro no-print">
+      <p class="maisoku-eyebrow">無料・登録不要</p>
+      <h1>写真と情報を入れて、<br class="maisoku-mobile-break" />マイソクを作る。</h1>
+      <p>賃貸物件の募集図面を、A4横1枚に。入力した内容が、その場でプレビューに反映されます。</p>
+      <p class="maisoku-local-note">入力内容と写真はブラウザ内だけで処理します。ページを閉じると内容は失われます。</p>
+      <a class="maisoku-preview-link" href="#maisoku-preview">プレビュー・PDF保存へ</a>
+    </header>
+
+    <noscript><p>このツールを使うには、ブラウザのJavaScriptを有効にしてください。</p></noscript>
+
+    <div class="maisoku-workspace">
+      <aside class="maisoku-editor no-print" aria-label="マイソクの編集">
+        <div class="maisoku-editor-heading">
+          <h2>掲載する内容</h2>
+          <button id="maisoku-sample" type="button" class="maisoku-text-button">架空のサンプルを入力</button>
+        </div>
+        <form id="maisoku-form" autocomplete="off" onsubmit="return false">
+          {fieldGroups.map((group, index) => (
+            <details class="maisoku-section" open={index < 2}>
+              <summary>{group.title}</summary>
+              {group.description && <p class="maisoku-help">{group.description}</p>}
+              <div class="maisoku-fields">
+                {group.fields.map(field => (
+                  <label class:list={["maisoku-field", { "is-wide": field.wide || field.multiline }]} for={`field-${field.id}`}>
+                    <span>{field.label}</span>
+                    {field.multiline ? (
+                      <textarea id={`field-${field.id}`} name={field.id} rows={4} placeholder={field.placeholder}></textarea>
+                    ) : field.options ? (
+                      <select id={`field-${field.id}`} name={field.id}>
+                        <option value="">選択してください</option>
+                        {field.options.map(option => <option value={option}>{option}</option>)}
+                      </select>
+                    ) : (
+                      <input id={`field-${field.id}`} name={field.id} type={field.type || "text"} min={field.type === "number" ? "0" : undefined} step={field.type === "number" ? "any" : undefined} placeholder={field.placeholder} />
+                    )}
+                  </label>
+                ))}
+              </div>
+            </details>
+          ))}
+
+          <details class="maisoku-section" open>
+            <summary>写真・間取り</summary>
+            <p class="maisoku-help">メイン1枚・小写真4枚・間取り1枚。未選択の枠は空欄になります。JPEG・PNG・WebPに対応しています。</p>
+            {photoSlots.map(slot => (
+              <div class="maisoku-upload">
+                <label for={`photo-${slot.id}`}><strong>{slot.label}</strong><span>{slot.hint}</span></label>
+                <input id={`photo-${slot.id}`} type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" aria-describedby={`photo-error-${slot.id}`} />
+                <button type="button" class="maisoku-text-button" data-clear-photo={slot.id} disabled>写真を外す</button>
+                <p id={`photo-error-${slot.id}`} class="maisoku-error" role="alert"></p>
+              </div>
+            ))}
+          </details>
+          <button id="maisoku-reset" class="maisoku-reset" type="button">入力と写真をクリア</button>
+        </form>
+      </aside>
+
+      <section id="maisoku-preview" class="maisoku-preview" aria-label="マイソクのプレビュー">
+        <div class="maisoku-preview-toolbar no-print">
+          <div><h2>仕上がりプレビュー</h2><span>A4・横</span></div>
+          <label class="maisoku-size-toggle"><input id="maisoku-fullsize" type="checkbox" />原寸で見る</label>
+        </div>
+        <div id="maisoku-stage" class="maisoku-stage">
+          <div id="maisoku-holder" class="maisoku-holder">
+            <article id="maisoku-paper" class="maisoku-paper" aria-label="A4横の募集図面">
+              <header class="maisoku-paper-header">
+                <div class="maisoku-property-badge"><span data-field="propertyType" data-empty="物件" class="is-placeholder">物件</span><span>賃貸</span></div>
+                <div class="maisoku-paper-titles">
+                  <div class="maisoku-headline is-placeholder" data-field="headline" data-empty="暮らしの魅力を、ひとことで。">暮らしの魅力を、ひとことで。</div>
+                  <div class="maisoku-subheadline" data-field="subheadline"></div>
+                  <div class="maisoku-property-name is-placeholder" data-field="propertyName" data-empty="物件名">物件名</div>
+                </div>
+              </header>
+
+              <div class="maisoku-paper-body">
+                <div class="maisoku-photo-grid">
+                  {photoSlots.map(slot => (
+                    <div class={`maisoku-photo maisoku-photo-${slot.id}`}>
+                      <span class="maisoku-photo-placeholder">{slot.label}</span>
+                      <img data-photo={slot.id} alt={slot.label} hidden />
+                    </div>
+                  ))}
+                </div>
+                <div class="maisoku-property-info">
+                  <div class="maisoku-price-row">
+                    <div><span class="maisoku-paper-label">家賃</span><strong data-field="rent" data-empty="—">—</strong></div>
+                    <div><span class="maisoku-paper-label">管理費・共益費</span><span data-field="managementFee" data-empty="—">—</span></div>
+                  </div>
+                  <div class="maisoku-deposits">
+                    <div><span class="maisoku-paper-label">敷金</span><span data-field="deposit" data-empty="—">—</span></div>
+                    <div><span class="maisoku-paper-label">礼金</span><span data-field="keyMoney" data-empty="—">—</span></div>
+                  </div>
+                  <div class="maisoku-info-row"><span class="maisoku-paper-label">所在地</span><div data-field="address" data-empty="—">—</div></div>
+                  <div class="maisoku-info-row"><span class="maisoku-paper-label">交通</span><div><div data-field="access1" data-empty="—">—</div><div data-field="access2"></div></div></div>
+                  <div class="maisoku-facts">
+                    {pairs.map(pair => <div class="maisoku-fact-pair">{pair.map(item => <div class="maisoku-fact"><span class="maisoku-paper-label">{item.label}</span><span data-field={item.id} data-empty="—">—</span></div>)}</div>)}
+                  </div>
+                  <div class="maisoku-info-row maisoku-info-text"><span class="maisoku-paper-label">設備・条件</span><div data-field="equipment"></div></div>
+                  <div class="maisoku-info-row maisoku-info-text"><span class="maisoku-paper-label">備考</span><div data-field="remarks"></div></div>
+                </div>
+              </div>
+
+              <footer class="maisoku-paper-footer">
+                <div class="maisoku-company">
+                  <strong data-field="companyName" data-empty="会社名・お問い合わせ先" class="is-placeholder">会社名・お問い合わせ先</strong>
+                  <div class="maisoku-company-contact"><span class="maisoku-paper-label">TEL</span><span data-field="phone"></span><span class="maisoku-contact-name" data-field="contact"></span></div>
+                  <div data-field="companyAddress"></div>
+                  <div data-field="email"></div>
+                  <div data-field="license"></div>
+                </div>
+                <div class="maisoku-trade">
+                  <div class="maisoku-info-row"><span class="maisoku-paper-label">取引態様</span><div data-field="transaction"></div></div>
+                  <div class="maisoku-info-row"><span class="maisoku-paper-label">広告料 AD</span><div data-field="ad"></div></div>
+                  <div class="maisoku-info-row maisoku-trade-notes"><span class="maisoku-paper-label">特記事項</span><div data-field="tradeRemarks"></div></div>
+                </div>
+              </footer>
+            </article>
+          </div>
+        </div>
+        <div class="maisoku-export no-print">
+          <div><h3>この内容で書き出す</h3><p>印刷画面で「PDFに保存」を選べます。用紙はA4・横、ヘッダーとフッターはオフにしてください。</p></div>
+          <button id="maisoku-print" type="button" class="maisoku-primary">印刷・PDFに保存</button>
+          <p id="maisoku-status" class="maisoku-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import "../../../lib/maisoku/editor";
+</script>

@@ -1,0 +1,126 @@
+.maisoku-tool { color: #24323d; font-size: 16px; }
+.maisoku-tool *, .maisoku-tool *::before, .maisoku-tool *::after { box-sizing: border-box; }
+.maisoku-intro { padding: 0 0 26px; }
+.maisoku-intro h1 { margin: 4px 0 10px; font-size: clamp(1.5rem, 3vw, 2.1rem); letter-spacing: .02em; }
+.maisoku-intro p { margin: 0 0 6px; }
+.maisoku-intro .maisoku-eyebrow { color: #9c4a10; font-weight: 700; font-size: .875rem; }
+.maisoku-intro .maisoku-local-note { color: #5a6772; font-size: .875rem; }
+.maisoku-preview-link { display: inline-block; margin-top: 6px; color: #365a76; font-size: .875rem; text-underline-offset: 3px; }
+.maisoku-mobile-break { display: none; }
+.maisoku-workspace { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 22px; align-items: start; }
+.maisoku-editor { border: 1px solid #dce2e7; border-radius: 12px; background: #fff; overflow: hidden; }
+.maisoku-editor-heading { padding: 18px; background: #f5f7f9; border-bottom: 1px solid #dce2e7; }
+.maisoku-editor h2, .maisoku-preview h2 { font-size: 1.05rem; margin: 0; padding: 0; border: 0; }
+.maisoku-text-button { border: 0; padding: 5px 0; background: transparent; color: #365a76; text-decoration: underline; text-underline-offset: 3px; font: inherit; font-size: .875rem; cursor: pointer; }
+.maisoku-text-button:disabled { color: #89929b; cursor: default; }
+.maisoku-section { border-bottom: 1px solid #e1e6eb; padding: 0 18px; }
+.maisoku-section summary { padding: 17px 0; font-weight: 700; cursor: pointer; font-size: .9375rem; }
+.maisoku-fields { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 14px 12px; padding: 0 0 20px; }
+.maisoku-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: .875rem; }
+.maisoku-field.is-wide { grid-column: 1 / -1; }
+.maisoku-field input, .maisoku-field textarea, .maisoku-field select { width: 100%; min-width: 0; border: 1px solid #bfc9d2; border-radius: 6px; background: #fff; color: #24323d; font: inherit; font-size: 1rem; padding: 9px 10px; line-height: 1.45; }
+.maisoku-field textarea { resize: vertical; }
+.maisoku-field select { appearance: none; padding-right: 28px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23435463' stroke-width='1.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+.maisoku-tool button:focus-visible, .maisoku-tool input:focus-visible, .maisoku-tool textarea:focus-visible, .maisoku-tool select:focus-visible, .maisoku-tool summary:focus-visible { outline: 3px solid #4b88af; outline-offset: 3px; }
+.maisoku-help { font-size: .875rem; color: #5a6772; margin: 0 0 16px; }
+.maisoku-upload { border-top: 1px solid #e7ebef; padding: 14px 0; }
+.maisoku-upload label { display: flex; flex-direction: column; font-size: .875rem; gap: 2px; margin-bottom: 8px; }
+.maisoku-upload label span { color: #5a6772; }
+.maisoku-upload input { display: block; width: 100%; font-size: .875rem; }
+.maisoku-upload input::file-selector-button { border: 1px solid #c4cdd5; border-radius: 5px; padding: 7px 9px; margin-right: 8px; background: #f5f7f9; color: #24323d; cursor: pointer; }
+.maisoku-error { font-size: .875rem; color: #a62929; margin: 4px 0 0; }
+.maisoku-error:empty { display: none; }
+.maisoku-reset { margin: 16px 18px; border: 1px solid #c4cdd5; background: #fff; color: #52616e; padding: 8px 12px; border-radius: 6px; font: inherit; font-size: .875rem; cursor: pointer; }
+.maisoku-preview { position: sticky; top: 85px; min-width: 0; scroll-margin-top: 85px; }
+.maisoku-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.maisoku-preview-toolbar > div { display: flex; align-items: center; gap: 12px; }
+.maisoku-preview-toolbar > div > span, .maisoku-size-toggle { font-size: .875rem; color: #52616e; }
+.maisoku-size-toggle { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.maisoku-stage { width: 100%; padding: 16px; overflow: auto; border: 1px solid #dce2e7; border-radius: 10px; background: #eaf0f4; }
+.maisoku-holder { margin: 0 auto; }
+.maisoku-paper { width: 297mm; height: 210mm; padding: 6mm; display: grid; grid-template-rows: 28mm minmax(0, 1fr) 32mm; gap: 3mm; background: #fff; color: #20252a; font-family: "Yu Gothic", "Meiryo", "Noto Sans JP", sans-serif; font-size: 14px; line-height: 1.4; transform: scale(var(--paper-scale, 1)); transform-origin: top left; box-shadow: 0 4px 20px #25354420; }
+.maisoku-paper [data-field] { overflow-wrap: anywhere; min-width: 0; }
+.maisoku-paper .is-placeholder { color: #7b858d; }
+.maisoku-paper-header { display: grid; grid-template-columns: 152px minmax(0, 1fr); gap: 18px; padding: 10px 14px; background: #f8d5ae; border-bottom: 4px solid #bb713d; }
+.maisoku-property-badge { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px; background: #9c392b; color: #fff; font-size: 22px; font-weight: 700; letter-spacing: .08em; }
+.maisoku-property-badge .is-placeholder { color: #fff; }
+.maisoku-paper-titles { min-width: 0; align-self: center; }
+.maisoku-headline { font-size: 25px; font-weight: 700; line-height: 1.25; }
+.maisoku-subheadline { font-size: 14px; margin-top: 4px; }
+.maisoku-property-name { font-size: 15px; font-weight: 700; margin-top: 4px; }
+.maisoku-paper-body { display: grid; grid-template-columns: 56% minmax(0, 1fr); gap: 10px; min-height: 0; }
+.maisoku-photo-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 5px; padding: 5px; border: 1px solid #53616b; min-height: 0; }
+.maisoku-photo { position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; background: #f2f4f5; }
+.maisoku-photo-main { grid-column: 1 / 3; grid-row: 1 / 3; }
+.maisoku-photo-small1 { grid-column: 3; grid-row: 1; }
+.maisoku-photo-small2 { grid-column: 3; grid-row: 2; }
+.maisoku-photo-small3 { grid-column: 1; grid-row: 3; }
+.maisoku-photo-small4 { grid-column: 2; grid-row: 3; }
+.maisoku-photo-floorplan { grid-column: 3; grid-row: 3; }
+.maisoku-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+.maisoku-photo img[hidden] { display: none; }
+.maisoku-photo-floorplan img { object-fit: contain; background: #fff; }
+.maisoku-photo-placeholder { color: #82909b; font-size: 14px; }
+.maisoku-photo.has-photo .maisoku-photo-placeholder { display: none; }
+.maisoku-property-info { display: grid; grid-template-rows: 56px 30px 36px 44px max-content minmax(0, 1fr) minmax(0, 1fr); border: 1px solid #53616b; min-height: 0; }
+.maisoku-paper-label { font-size: 12px; color: #4e5356; }
+.maisoku-price-row { display: grid; grid-template-columns: 1.2fr 1fr; background: #fff7ed; border-bottom: 1px solid #879198; }
+.maisoku-price-row > div { display: flex; flex-direction: column; justify-content: center; padding: 4px 10px; }
+.maisoku-price-row > div + div { border-left: 1px solid #c7cdd1; }
+.maisoku-price-row strong { font-size: 26px; line-height: 1.15; }
+.maisoku-deposits { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #879198; }
+.maisoku-deposits > div { display: flex; align-items: center; gap: 14px; padding: 3px 10px; }
+.maisoku-deposits > div + div { border-left: 1px solid #c7cdd1; }
+.maisoku-info-row { display: grid; grid-template-columns: 74px minmax(0,1fr); min-height: 0; border-bottom: 1px solid #879198; }
+.maisoku-info-row > .maisoku-paper-label { display: flex; align-items: center; justify-content: center; padding: 3px; background: #fff0df; border-right: 1px solid #b1bac1; }
+.maisoku-info-row > div { align-self: center; padding: 3px 6px; }
+.maisoku-facts { display: grid; grid-template-rows: repeat(4, minmax(26px, auto)); }
+.maisoku-fact-pair { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #879198; }
+.maisoku-fact { display: grid; grid-template-columns: 74px minmax(0,1fr); }
+.maisoku-fact + .maisoku-fact { border-left: 1px solid #b1bac1; }
+.maisoku-fact > span { display: flex; align-items: center; padding: 3px 5px; }
+.maisoku-fact > .maisoku-paper-label { justify-content: center; background: #fff0df; border-right: 1px solid #b1bac1; font-size: 11px; }
+.maisoku-info-text > div { align-self: start; white-space: pre-wrap; padding-top: 5px; }
+.maisoku-info-text:last-child { border-bottom: 0; }
+.maisoku-paper-footer { display: grid; grid-template-columns: 56% minmax(0,1fr); gap: 10px; min-height: 0; }
+.maisoku-company { padding: 7px 10px; border: 1px solid #53616b; font-size: 12px; line-height: 1.45; }
+.maisoku-company > strong { font-size: 18px; }
+.maisoku-company-contact { display: flex; align-items: baseline; gap: 9px; font-size: 19px; line-height: 1.4; }
+.maisoku-contact-name { margin-left: auto; font-size: 12px; }
+.maisoku-trade { display: grid; grid-template-rows: 26px 26px minmax(0,1fr); border: 1px solid #53616b; font-size: 12px; }
+.maisoku-trade-notes { border-bottom: 0; }
+.maisoku-trade-notes > div { align-self: start; white-space: pre-wrap; }
+.maisoku-export { margin-top: 18px; padding: 18px; border: 1px solid #dce2e7; border-radius: 10px; background: #fff; }
+.maisoku-export h3 { font-size: 1rem; margin: 0 0 6px; }
+.maisoku-export p { font-size: .875rem; margin: 0 0 14px; color: #52616e; }
+.maisoku-primary { display: block; width: 100%; border: 0; border-radius: 7px; background: #2e4d63; color: #fff; font: inherit; font-weight: 700; padding: 12px 18px; cursor: pointer; }
+.maisoku-primary:hover { background: #213b4e; }
+.maisoku-primary:disabled { opacity: .6; cursor: wait; }
+.maisoku-export .maisoku-status { margin: 8px 0 0; }
+.maisoku-status:empty { display: none; }
+@media (max-width: 1000px) {
+  .maisoku-workspace { grid-template-columns: 300px minmax(0,1fr); gap: 16px; }
+  .maisoku-preview-toolbar { align-items: start; flex-direction: column; gap: 6px; }
+}
+@media (max-width: 760px) {
+  body:has(.maisoku-tool) .header-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+  body:has(.maisoku-tool) .site-tagline { display: none; }
+  body:has(.maisoku-tool) .site-nav { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  body:has(.maisoku-tool) .site-nav a { margin-left: 0; font-size: .875rem; }
+  .maisoku-workspace { display: flex; flex-direction: column; }
+  .maisoku-editor, .maisoku-preview { width: 100%; }
+  .maisoku-preview { position: static; }
+  .maisoku-preview-toolbar { flex-direction: row; align-items: center; }
+  .maisoku-mobile-break { display: initial; }
+  .maisoku-stage { padding: 16px; }
+}
+@page { size: A4 landscape; margin: 0; }
+@media print {
+  html, body { width: 297mm; height: 210mm; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  body:has(.maisoku-tool) .site-header, body:has(.maisoku-tool) .site-footer, .maisoku-tool .no-print { display: none !important; }
+  body:has(.maisoku-tool) .site-main, body:has(.maisoku-tool) .main-inner { width: 297mm !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+  .maisoku-tool, .maisoku-workspace, .maisoku-preview, .maisoku-stage, .maisoku-holder { display: block; width: 297mm !important; height: 210mm !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: #fff; border-radius: 0; position: static; overflow: visible; }
+  .maisoku-paper { transform: none !important; box-shadow: none; margin: 0; break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .maisoku-photo-placeholder { display: none; }
+  .maisoku-photo:not(.has-photo) { background: #fff; }
+}
