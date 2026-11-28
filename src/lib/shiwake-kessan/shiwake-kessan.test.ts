@@ -177,6 +177,13 @@ describe("集計", () => {
     }
   });
 
+  it("赤字の繰越利益剰余金は、マイナスの科目に並べない", () => {
+    const { entries } = parseLedger("日付,借方,貸方,金額\n2026/01/01,普通預金,資本金,1000\n2026/02/01,消耗品費,普通預金,300");
+    const [b] = buildBs(entries, STANDARD_ACCOUNTS, 3, "balance");
+    expect(b.detail.純資産).toContainEqual({ account: "繰越利益剰余金", amount: -300 });
+    expect(b.negatives).toEqual([]);
+  });
+
   it("間に抜けている期を見つける", () => {
     expect(missingPeriods(["2024-09", "2026-09", "2025-09"])).toEqual([]);
     expect(missingPeriods(["2023-03", "2026-03"])).toEqual(["2024-03", "2025-03"]);

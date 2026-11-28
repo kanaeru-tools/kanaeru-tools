@@ -28,7 +28,7 @@ export interface BsStatement {
   純資産合計: number;
   負債純資産合計: number;
   差額: number; // 資産合計 −（負債＋純資産）。期首の残高の入力の食い違いや、対象外の科目の残りがあると0でなくなる
-  negatives: BsLine[]; // 期末にマイナスになっている科目（残高のときだけ。累計額・引当金は除く）
+  negatives: BsLine[]; // 期末にマイナスになっている科目（残高のときだけ。累計額・引当金と、赤字でふつうにマイナスになる繰越利益剰余金は除く）
 }
 
 const ASSET: ReadonlySet<BsKubun> = new Set<BsKubun>(["流動資産", "固定資産", "繰延資産"]);
@@ -138,7 +138,7 @@ export function buildBs(
     const 負債純資産合計 = 負債合計 + 純資産合計;
     const negatives =
       mode === "balance"
-        ? BS_KUBUN.flatMap((k) => detail[k]).filter((l) => l.amount < 0 && !CONTRA.test(l.account))
+        ? BS_KUBUN.flatMap((k) => detail[k]).filter((l) => l.amount < 0 && !CONTRA.test(l.account) && l.account !== RETAINED)
         : [];
     return {
       period, detail, total, 資産合計, 負債合計, 純資産合計, 負債純資産合計,

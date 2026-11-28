@@ -157,6 +157,14 @@ html, body {
   text-decoration: underline;
 }
 
+/* スマホ：ロゴとメニューを2段にし、キャッチコピーは隠す（横に並べると折り返して詰まる） */
+@media (max-width: 640px) {
+  .header-inner { flex-direction: column; align-items: flex-start; gap: 6px; padding: 0.6rem 1rem; }
+  .site-tagline { display: none; }
+  .site-nav { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .site-nav a { margin-left: 0; font-size: 0.875rem; }
+}
+
 .site-footer a {
   color: inherit;
 }
